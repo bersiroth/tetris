@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="style.css"/>    
+        <script src="jquery-2.1.3.min.js"></script>
+        <script>
+            $(document).ready(function() {
+			
+				// TODO 
+				// faire une pour faire apparaitre un block
+			
+                document.addEventListener('keydown', keydown, false);
+                var KEY     = { ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 };
+                var ctx = document.getElementById("canvas").getContext("2d");
+                ctx.lineWidth = 1;
+				
+				var I = {color : '#FA6E69', blocks : [	'0F00' ]};
+				var J = {color : '#FFCE74', blocks : [	'4700' ]};
+				var O = {color : '#97D17A', blocks : [	'3300' ]};					
+				var L = {color : '#4C8DA6', blocks : [	'0740' ]};									
+				var S = {color : '#5B608C', blocks : [	'4620' ]};	
+				var T = {color : '#FA6E69', blocks : [	'2620' ]};								
+				var Z = {color : '#FA6E69', blocks : [	'2640' ]};	
+														
+				var blockList = [I,J,O,L,S,T,Z];
+                var largeurEcran = $("#canvas").prop('width');
+                var hauteurEcran = $("#canvas").prop('height');
+                var hauteurBlock = 25;
+				
+				function initGrid(){
+					grid = new array();
+					for (a=0;a<=largeurEcran/hauteurBlock;a++){
+						grid[a] = new Array();
+						for (b=0;b<=hauteurEcran/hauteurBlock;b++){
+							grid[a][b] = 0;
+						}
+					}
+				}
+				
+                var colonne = 0;
+
+                var xBlock=0,yBlock=0;
+                var clear=true;
+                var NxBlock,NyBlock;
+				var multiplicateurVitesse=8;
+				var NbBlock=4;
+				var saveColonne=25;
+				var random;
+                var grid;
+
+				var draw = false;
+                var left = 0;
+				
+								
+				
+				function drawBlock(x,y,block){
+					switch(block) {
+						// a = hauteur
+						// b = longueur
+					
+						//	0 X 0
+						//	X X X
+						case 0: 
+							for (a=0;a<2*hauteurBlock;a+=hauteurBlock){
+								for (b=0;b<3*hauteurBlock;b+=hauteurBlock){
+									if ((a == 0 && b == hauteurBlock) || a == hauteurBlock) {
+										ctx.strokeRect(x+b, y+a,  hauteurBlock, hauteurBlock);
+										ctx.fillRect(x+b, y+a, hauteurBlock, hauteurBlock);
+									}
+								}
+							}
+							break;
+						//	0 X
+						//	0 X
+						//	X X
+						case 1:	
+							for (a=0;a<3*hauteurBlock;a+=hauteurBlock){
+								for (b=0;b<2*hauteurBlock;b+=hauteurBlock){
+									if ((b == 0 && a == (2*hauteurBlock)) || b == hauteurBlock) {
+										ctx.strokeRect(x+b, y+a,  hauteurBlock, hauteurBlock);
+										ctx.fillRect(x+b, y+a, hauteurBlock, hauteurBlock);
+									}
+								}
+							}
+							break;
+						//	X X 0
+						//	0 X X
+						case 2:
+							dlc = 0;
+							for (a=0;a<2*hauteurBlock;a+=hauteurBlock){
+								for (b=0;b<3*hauteurBlock;b+=hauteurBlock){
+									if ((b == hauteurBlock) || (b == 0 && a == 0) || (b == 2*hauteurBlock && a == hauteurBlock)) {
+										ctx.strokeRect(x+b, y+a,  hauteurBlock, hauteurBlock);
+										ctx.fillRect(x+b, y+a, hauteurBlock, hauteurBlock);
+									}
+								}
+							}
+							break;
+						//	X X
+						//	X X
+						case 3:
+							ctx.fillRect(x, y, hauteurBlock*2, hauteurBlock*2);
+							for (a=0;a<2*hauteurBlock;a+=hauteurBlock){
+								for (b=0;b<2*hauteurBlock;b+=hauteurBlock){
+									ctx.strokeRect(x+a, y+b,  hauteurBlock, hauteurBlock);
+								}
+							}
+							break;
+						//	X
+						//	X
+						//	X
+						//	X
+						case 4:
+							ctx.fillRect(x, y, hauteurBlock, hauteurBlock*NbBlock);
+							for (a=0;a<NbBlock*hauteurBlock;a+=hauteurBlock){
+								ctx.strokeRect(x, y+a,  hauteurBlock, hauteurBlock);
+							}
+                            break;
+					}		
+				};
+				
+                function newBlock(){
+                    left = 0;
+                    var i = 0;
+					random = Math.floor((Math.random()*couleur.length));
+					ctx.fillStyle=couleur[random];
+                    var down = setInterval(function(){
+					//|| i%multiplicateurVitesse == 0
+						if (draw == true || i==0 || i%multiplicateurVitesse == 0) {
+							ctx.clearRect(0, 0, largeurEcran, hauteurEcran);
+							NxBlock = hauteurBlock * colonne;
+							NyBlock = left;
+							if (blocks[NxBlock/hauteurBlock][NyBlock/hauteurBlock] == 0){
+								if (clear == true) {
+									ctx.clearRect(xBlock-1, yBlock-1, hauteurBlock+2,(hauteurBlock*NbBlock)+2);
+									if((xBlock/hauteurBlock) > 0) {
+										if(blocks[(xBlock/hauteurBlock)-1][(yBlock/hauteurBlock)] == 0){
+											ctx.clearRect(xBlock-1-hauteurBlock, yBlock-1, hauteurBlock+2, hauteurBlock+2);
+										}
+									}
+								} else {
+									clear = true;
+								}
+							}
+							xBlock = NxBlock;
+							yBlock = NyBlock;
+							if (blocks[NxBlock/hauteurBlock][NyBlock/hauteurBlock] == 0){ 
+								drawBlock(NxBlock, NyBlock, random);							
+							}
+							i++;
+							if (blocks[NxBlock/hauteurBlock][(NyBlock/hauteurBlock)+NbBlock] == 0 && i < (hauteurEcran/hauteurBlock)*multiplicateurVitesse && (left + (NbBlock*hauteurBlock)) < hauteurEcran){
+								left = left + hauteurBlock ;
+							} else {
+								//blocks[NxBlock/hauteurBlock][NyBlock/hauteurBlock] = 1; 
+								clearInterval(down);
+								newBlock();
+								clear = false;
+							}
+							draw = false;
+						} else {
+							i++;
+						}
+                    },multiplicateurVitesse*3);
+                };
+				
+                newBlock();
+				
+                function keydown(ev) {
+                    switch(ev.keyCode) {
+                        case KEY.LEFT:
+                            if (colonne > 0) {
+                                colonne = colonne - 1;
+								drawBlock(hauteurBlock * colonne, NyBlock, random);
+                            }
+                            break;
+                        case KEY.RIGHT:
+                            if (colonne < (largeurEcran/hauteurBlock)-1) {
+                                colonne = colonne + 1;
+								drawBlock(hauteurBlock * colonne, NyBlock, random);
+                            }
+                            break;
+                        case KEY.UP:    break;
+                        case KEY.DOWN: 
+							draw = true;
+							break;
+                    }
+					saveColonne = colonne;
+                };
+				
+            });
+        </script>
+    </head>
+    <body> 
+        <div id="page">
+            <h1 id="titre">test</h1>
+            <canvas id="canvas" width="400px" height="800px">
+                Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
+            </canvas>
+            <div id="score-jeu"></div>
+            <div id="menu-jeu"></div>
+        </div>
+    </body>
+</html>

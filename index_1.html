@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" href="style.css"/>    
+        <script src="jquery-2.1.3.min.js"></script>
+        <script>
+            $(document).ready(function () {
+
+                // TODO 
+                //
+                // Faire disparaitre les lignes
+                // 
+
+                document.addEventListener('keydown', keydown, false);
+                var KEY = {ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
+                var ctx = document.getElementById("canvas").getContext("2d");
+                ctx.lineWidth = 1;
+
+                // exemple :
+                // 
+                // 2 6 4 0
+                // ^ ^ ^ ^
+                // 0 0 0 0 | 8
+                // 0 1 1 0 | 4
+                // 1 1 0 0 | 2
+                // 0 0 0 0 | 1
+                
+                // Ordre des blocks haut, droite, bas , gauche
+                var I = {color: '#FA6E69', blocks: ['4444', '00F0', '2222', '0F00'], direction : 0};
+                var J = {color: '#FFCE74', blocks: ['2E00', 'C440', '0E80', '4460'], direction : 0};
+                var O = {color: '#97D17A', blocks: ['CC00', 'CC00', 'CC00', 'CC00'], direction : 0};
+                var L = {color: '#4C8DA6', blocks: ['0E20', '6440', '8E00', '44C0'], direction : 0};
+                var S = {color: '#5B608C', blocks: ['2640', 'C600', '4C80', '0C60'], direction : 0};
+                var T = {color: '#FA6E69', blocks: ['4640', '4E00', '4C40', '0E40'], direction : 0};
+                var Z = {color: '#FA6E69', blocks: ['4620', '6C00', '8C40', '06C0'], direction : 0};
+
+                var pieceList = [I, J, O, L, S, T, Z];                  // la liste de pieces
+                var largeurEcran = $("#canvas").prop('width');          // en px
+                var hauteurEcran = $("#canvas").prop('height');         // en px
+                var hauteurBlock = 25;                                  // en px
+                var longueurPiece = 4;                                  // en nombre de block
+                var grid = "";                                          // un tableau a deux dimension representant la grille de jeu
+                var largeurGrid = (largeurEcran / hauteurBlock) - 1;    // en nombre de case
+                var hauteurGrid = (hauteurEcran / hauteurBlock) - 1;    // en nombre de case
+                var speed = false;
+                var multiplicateurVitesse = 8;
+                var x = (largeurEcran/2)-((longueurPiece+2)*hauteurBlock), y = 0;
+                var piece;
+                
+                console.debug('largeur : ' + largeurGrid);
+                console.debug('hauteur : ' + hauteurGrid);
+                 
+                // Initialise la grille de jeu
+                function initGrid() {
+                    grid = new Array();
+                    for (var a = 0; a <= largeurGrid; a++) {
+                        grid[a] = new Array();
+                        for (var b = 0; b <= hauteurGrid; b++) {
+                            grid[a][b] = 0;
+                        }
+                    }
+                    newPiece();
+                }
+
+                // Selectionne aléatoirement une piece
+                function getRandomPiece(){
+                    var random = Math.floor(Math.random() * pieceList.length);
+                    return pieceList[random];
+                }
+                
+                // Transforme un nombre decimale en binaire
+                function decToBin(dec,length){
+                    var str = Number(dec).toString(2);
+                    var pad = "";
+                    for(var z=0; z < length; z++){
+                        pad = pad + "0";
+                    }
+                    return pad.substring(0, pad.length - str.length) + str;
+                }
+                
+                // Converti des coordonne en case de la grille
+                function getCase(x,y) {
+                    return {x: Math.round(x/hauteurBlock),y: Math.round(y/hauteurBlock)};
+                }
+                
+                // Dessine une piece si toutes les cases sont libre
+                function drawBlock(x, y, piece) {
+                    if (isEmptyPiece(x, y, piece)) {
+                        var gridCase = getCase(x,y);
+                        eachBlocksFromPiece(x, y, piece, function(x,y){
+                            if (isEmptyBlock(x,y)) {
+                                gridCase = getCase(x,y);
+//                                console.debug('dessin : X ' + x + ' Y ' + y);
+                                ctx.fillStyle = piece.color;
+                                ctx.strokeRect(gridCase.x * hauteurBlock, gridCase.y * hauteurBlock, hauteurBlock, hauteurBlock);
+                                ctx.fillRect(gridCase.x * hauteurBlock, gridCase.y * hauteurBlock, hauteurBlock, hauteurBlock);
+                                
+                            }
+                        });
+                        return true;
+                    } else {
+//                        console.debug('pas dessin : X ' + x + ' Y ' + y);
+                        return false;
+                    }
+                }
+                
+                // Test si une case est libre
+                function isEmptyBlock(x,y){
+                    var gridCase = getCase(x,y);
+                    if (gridCase.x > largeurGrid || gridCase.y > hauteurGrid) {
+//                        console.debug('test empty : ');
+//                        console.debug(gridCase);
+                        return false;
+                    } else {
+//                        if (grid[gridCase.x][gridCase.y]) {
+//                            console.debug('test empty : ');
+//                            console.debug(gridCase);
+//                        }
+                        return (grid[gridCase.x][gridCase.y]) ? false : true;
+                    }
+                }
+                
+                // Test les cases sont libre pour une piece
+                function isEmptyPiece(x, y, piece, direction){
+                    var result = true;
+                    if( typeof(direction) == 'undefined' ){
+                        direction = piece.direction;
+                    }
+                    eachBlocksFromPiece(x, y, piece, function(x,y){
+                        if (!isEmptyBlock(x,y)) {
+                            result = false;
+                        }
+                    }, direction);
+                    return result;
+                }
+                
+                // Boucle sur les blocks d'une piece et retour un tableau avec les coordonnées des blocks d'une piece
+                function eachBlocksFromPiece(x, y, piece, fn, direction){
+                    if( typeof(direction) == 'undefined' ){
+                        direction = piece.direction;
+                    }
+                    var bin, nbBlock = 0;
+                    for (var a=0; a < piece.blocks[direction].length; a++){
+                        bin = decToBin( parseInt( piece.blocks[direction][a], 16 ),longueurPiece);
+                        for (var e=0; e < bin.length; e++){
+                            if ( bin[e] != '0' ) {
+                                nbBlock++;
+                                fn(x + (a * hauteurBlock), y + (e * hauteurBlock));
+                                if (nbBlock == longueurPiece){
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // efface toutes les cases de la grille qui sont libre
+                function clearGrid(){
+                    for (var a = 0; a < grid.length; a++) {
+                        for (var b = 0; b < grid[a].length; b++) {
+                            if (grid[a][b] == false) {
+                                ctx.clearRect((a * hauteurBlock) - 1, (b * hauteurBlock) - 1, hauteurBlock + 2, hauteurBlock + 2);
+                            }
+                        }
+                    }
+                }
+                
+                // Création d'un nouvelle piece
+                function newPiece() {
+                    piece = getRandomPiece();
+                    var i = 0;
+                    var gridCase;
+                    x = 175, y = 0;
+                    
+                    deleteLine();
+                    var down = setInterval(function () {
+                        if (i == 0 || i%multiplicateurVitesse == 0 || speed == true) {
+                            if (i != 0) {
+                                y += hauteurBlock;
+                            }
+                            if (isEmptyPiece(x,y,piece)) {
+                                clearGrid();
+                                drawBlock(x,y,piece);
+                            } else {
+                                eachBlocksFromPiece(x, y-hauteurBlock, piece, function(x,y){
+                                    gridCase = getCase(x,y);
+                                    console.debug(gridCase);
+                                    grid[gridCase.x][gridCase.y] = true;
+                                });
+                                clearInterval(down);
+                                if (i != 0) {
+                                    newPiece();
+                                } else {
+                                    drawBlock(x,y,piece);
+                                    alert('GAME OVER');
+                                }
+                            } 
+                            i++;
+                            speed = false;
+                        } else {
+                            i++;
+                        }
+                    }, multiplicateurVitesse * 4);
+                }
+
+                function changeDirection(piece) {
+                    var direction;
+                    direction = (piece.direction + 1 == 4) ? 0 : piece.direction + 1;
+                    if(isEmptyPiece(x, y, piece, direction))
+                        piece.direction = direction;
+                }
+
+                function deleteLine(){
+                    var lineDelete;
+                    for (a = hauteurGrid ; a > 0 ; a-- ){
+                        lineDelete = true;
+                        for (b = 0 ; b < largeurGrid ; b++ ){
+                            if (grid[b][a] == false) {
+                                lineDelete = false;
+                                break;
+                            }
+                        }
+                        if (lineDelete == true) {
+                            
+                            console.debug('a : ' + a + ' b : ' + b);
+                            console.debug('delete : ');
+                            console.debug(a * hauteurBlock);
+                            console.debug(-1);
+                            console.debug(largeurEcran + 2);
+                            console.debug(hauteurBlock + 2);
+                            ctx.clearRect(-1, a * hauteurBlock, largeurEcran + 2, hauteurBlock + 2);
+                            for (f = 0 ; f < largeurGrid ; f++){
+                                grid[f][a] = false;
+                            }
+                        }
+                    }
+                    console.debug(lineDelete);
+                }
+
+                // Gestion des touches du clavier
+                function keydown(ev) {
+                    switch (ev.keyCode) {
+                        case KEY.LEFT:
+                            if (isEmptyPiece(x - hauteurBlock,y,piece)) {
+                                x -= hauteurBlock;
+                                clearGrid();
+                                drawBlock(x,y,piece);
+                            }
+                            break;
+                        case KEY.RIGHT:
+                            if (isEmptyPiece(x + hauteurBlock,y,piece)) {
+                                x += hauteurBlock;
+                                clearGrid();
+                                drawBlock(x,y,piece);
+                            }
+                            break;
+                        case KEY.UP:
+                            changeDirection(piece);
+                            break;
+                        case KEY.DOWN:
+                            speed = true;
+                            break;
+                    }
+                }
+                
+                // Lancement du jeu 
+                initGrid();
+            });
+        </script>
+    </head>
+    <body> 
+        <div id="page">
+            <h1 id="titre">test 65</h1>
+            <canvas id="canvas" width="400px" height="800px">
+                Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
+            </canvas>
+            <div id="score-jeu"></div>
+            <div id="menu-jeu"></div>
+        </div>
+    </body>
+</html>
