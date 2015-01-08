@@ -20,7 +20,7 @@ $(document).ready(function () {
     // Affichage de la prochaine piece
     // Afficher un tableau des meilleur score
     // Affichage de la zone de drop
-    // Menu d'option (taille de la grille, difficulté, couleur)
+    // Menu d'option (taille de la grille, difficultï¿½, couleur)
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
@@ -108,7 +108,7 @@ $(document).ready(function () {
         }
     }
 
-    // Selectionne aléatoirement une piece
+    // Selectionne alï¿½atoirement une piece
     function getRandomPiece(){
         var random = Math.floor(Math.random() * pieceList.length);
         return pieceList[random];
@@ -179,7 +179,7 @@ $(document).ready(function () {
         return result;
     }
 
-    // Boucle sur les blocks d'une piece et retour un tableau avec les coordonnées des blocks d'une piece
+    // Boucle sur les blocks d'une piece et retour un tableau avec les coordonnï¿½es des blocks d'une piece
     function eachBlocksFromPiece(x, y, piece, fn, direction){
         if( typeof(direction) == 'undefined' ){
             direction = piece.direction;
@@ -211,7 +211,7 @@ $(document).ready(function () {
         }
     }
 
-    // Création d'un nouvelle piece
+    // Crï¿½ation d'un nouvelle piece
     function newPiece() {
         piece = getRandomPiece();
         var i = 0;
@@ -252,8 +252,11 @@ $(document).ready(function () {
     function changeDirection(piece) {
         var direction;
         direction = (piece.direction + 1 == 4) ? 0 : piece.direction + 1;
-        if(isEmptyPiece(x, y, piece, direction))
+        if(isEmptyPiece(x, y, piece, direction)) {
             piece.direction = direction;
+            clearGrid();
+            drawPiece(x,y,piece);
+        }
     }
 
     // efface toutes les cases de la grille qui sont libre
@@ -372,6 +375,13 @@ $(document).ready(function () {
     var dateDebut;
     var testDate = false;
 
+    document.body.addEventListener('touchstart', function(event) {
+                                            event.preventDefault(); 
+                                            debutDoigt = event.changedTouches[0].clientX;
+                                            debutDoigtY = event.changedTouches[0].clientY;
+                                            dateDebut = new Date().getTime();
+                                        }, false); 
+    document.body.addEventListener('touchmove',tactile,false); 
     document.body.addEventListener('touchend', function(event) { 
                                             event.preventDefault(); 
                                             if (new Date().getTime() - dateDebut < 90) {
@@ -379,22 +389,16 @@ $(document).ready(function () {
                                                 changeDirection(piece);
                                             }
                                         }, false); 
-    document.body.addEventListener('touchstart', function(event) { 
-                                            debutDoigt = event.changedTouches[0].clientX;
-                                            debutDoigtY = event.changedTouches[0].clientY;
-                                            dateDebut = new Date().getTime();
-                                        }, false); 
-    document.body.addEventListener('touchmove',tactile,false); 
 
     // efface toutes les cases de la grille qui sont libre
     function tactile(event) { 
-        var newD, bouge1, bouge2;
         event.preventDefault(); 
+        var newD, bouge1, bouge2;
         finDoigt = event.changedTouches[0].clientX;
         newD = Math.floor((finDoigt - debutDoigt) / (hauteurBlock));
         finDoigtY = event.changedTouches[0].clientY;
 
-        console.log('debug : ' + debutDoigt + ' actual : ' + finDoigt + ' deplacement ' + newD);
+        console.log('debug : debutDoigt ' + debutDoigt + ' finDoigt : ' + finDoigt + ' debutDoigtY ' + debutDoigtY+ ' finDoigtY ' + finDoigtY);
 
         if (testDate != dateDebut) {
             testDate = dateDebut;
@@ -402,7 +406,7 @@ $(document).ready(function () {
             testD = 0;
         }
 
-        if (finDoigt > debutDoigt + hauteurBlock) {
+        if ((finDoigt - debutDoigt) > (finDoigtY - debutDoigtY)) {
             bouge1 = newD - testB;
             testB = testB + bouge1;
             if (bouge1 > 0) {
@@ -413,8 +417,10 @@ $(document).ready(function () {
                         drawPiece(x, y, piece);
                     }
                 }
+                debutDoigtY = finDoigtY;
+                debutDoigt = finDoigt;
             }
-        } else if (finDoigt < debutDoigt - hauteurBlock) {
+        } else if ((debutDoigt - finDoigt) > (finDoigtY - debutDoigtY)) {
             bouge2 = newD - testD;
             testD = testD + bouge2;
             if (bouge2 < 0) {
@@ -425,6 +431,8 @@ $(document).ready(function () {
                         drawPiece(x, y, piece);
                     }
                 }
+                debutDoigtY = finDoigtY;
+                debutDoigt = finDoigt;
             }
         } else {
             if (debutDoigtY < finDoigtY) {
