@@ -3,16 +3,17 @@ body {
 }
 
 #page {
-    width: 90%;
+    width: 80%;
     margin: 0 auto;
     border : 1px solid black;
     background-color:#cccccc;
     height: 1000px;
+    padding: 0 5%;
 }
 
 #titre {
-    margin: 0 auto;
-    width: 100px;
+    margin: 1% auto;
+    width: 25%;
 }
 
 #canvas { 
@@ -20,15 +21,16 @@ body {
     border: 2px solid #333; 
     float: left;
     background: black;
+    margin-left: 15%; 
 }
     
 #score-jeu {
     border: 1px solid black;
-    width: 30%;
+    width: 33%;
     height: 20%;
     background: aliceblue;
     float: left;
-    margin: 3%;
+    margin: 0 7%;
 }
 
 #score-jeu h2 {
@@ -41,44 +43,22 @@ body {
 
 #menu-jeu {
     border: 1px solid black;
-    width: 24%;
+    width: 27%;
     height: 52%;
     background: aliceblue;
     float: left;
-    margin: 3%;
-    padding: 3%;
+    margin: 3% 7%;
+    padding: 0 3%;
 }
-
-.block {
-    position: absolute;
-}
-
-/*@media screen and (min-height:   0px)  { body { font-size: 4px  ; color: red;} } 
-@media screen and (min-height: 300px)  { body { font-size: 6px  ; color: bisque;} } 
-@media screen and (min-height: 400px)  { body { font-size: 8px  ; color: blue;} } 
-@media screen and (min-height: 500px)  { body { font-size: 10px ; color: green;} } 
-@media screen and (min-height: 600px)  { body { font-size: 12px ; color: yellow;} } 
-@media screen and (min-height: 700px)  { body { font-size: 14px ; color: aqua;} } 
-@media screen and (min-height: 800px)  { body { font-size: 16px ; color: darkorange;} }   
-@media screen and (min-height: 900px)  { body { font-size: 18px ; color: hotpink;} }   
-@media screen and (min-height: 1000px) { body { font-size: 20px ; color: darkmagenta;} }   */
 
 @media screen and (min-height:   0px)  { body { font-size: 4px  ;} } 
-@media screen and (min-height: 300px)  { body { font-size: 6px  ;} #page {height : 290px} } 
-@media screen and (min-height: 400px)  { body { font-size: 8px  ;} #page {height : 390px} } 
-@media screen and (min-height: 500px)  { body { font-size: 10px ;} #page {height : 490px} } 
-@media screen and (min-height: 600px)  { body { font-size: 12px ;} #page {height : 590px} } 
-@media screen and (min-height: 700px)  { body { font-size: 14px ;} #page {height : 690px} } 
-@media screen and (min-height: 800px)  { body { font-size: 16px ;} #page {height : 790px} }   
-@media screen and (min-height: 900px)  { body { font-size: 18px ;} #page {height : 890px} }   
-@media screen and (min-height: 1000px) { body { font-size: 20px ;} #page {height : 1300px} }   
-
-
-// 40*32 25*16
-// 35*32 30*16
-// 30*32 30*16
-// 25*32 30*16
-// 20*32 30*16
-// 15*32 30*16
-// 10*32 30*16
-
+@media screen and (min-height: 300px)  { body { font-size: 6px  ;} #page {height : 315px} } 
+@media screen and (min-height: 400px)  { body { font-size: 8px  ;} #page {height : 415px} } 
+@media screen and (min-height: 500px)  { body { font-size: 10px ;} #page {height : 515px} } 
+@media screen and (min-height: 600px)  { body { font-size: 12px ;} #page {height : 615px} } 
+@media screen and (min-height: 700px)  { body { font-size: 14px ;} #page {height : 715px} } 
+@media screen and (min-height: 800px)  { body { font-size: 16px ;} #page {height : 815px} }   
+@media screen and (min-height: 900px)  { body { font-size: 18px ;} #page {height : 915px} }   
+@media screen and (min-height: 1000px) { body { font-size: 20px ;} #page {height : 1050px} }   
+@media screen and (min-height: 1100px) { body { font-size: 20px ;} #page {height : 1150px} }   
+@media screen and (min-height: 1200px) { body { font-size: 20px ;} #page {height : 1250px} }   
