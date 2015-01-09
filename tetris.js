@@ -13,6 +13,7 @@ $(document).ready(function () {
     //                  precision (en cours)
     //                  descente
     //                  rotation
+    // recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
     // Apparition des pieces au mileu
     // Revoir la vitesse par raport a la taille de lecran
@@ -50,7 +51,9 @@ $(document).ready(function () {
     document.addEventListener('keydown', keydown, false);
     var KEY = {ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
     var canvas = document.getElementById("canvas");
+    var canvasNext = document.getElementById("next-piece-canvas");
     var ctx = canvas.getContext("2d");
+    var ctxNext = canvasNext.getContext("2d");
     ctx.lineWidth = 1;
     var pieceList = [I, J, O, L, S, T, Z];                  // la liste de pieces
     var largeurEcran;                                       // en px
@@ -61,9 +64,10 @@ $(document).ready(function () {
     var largeurGrid = 10-1;                                 // en nombre de case
     var hauteurGrid = 22-1;                                 // en nombre de case
     var speed = false;
-    var multiplicateurVitesse = 8;
+    var multiplicateurVitesse = 30;
     var x = (largeurEcran/2)-(2*hauteurBlock), y = 0;
-    var piece;
+    var piece = '';
+    var nextPiece;
     var score = 0;
     var line = 0;
     var level = 0;
@@ -78,23 +82,23 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        var wh = screen.height;;
+        var height = screen.height * 0.8;
+        
+        hauteurBlock = Math.floor(height / (hauteurGrid+1));
+        console.log('hauteurBlock ' + hauteurBlock);
+        
+        var width = hauteurBlock * (largeurGrid + 1);
+        canvas.width = width; 
+        largeurEcran = width;    
+        $("#canvas").css('width', width + 'px');
 
-        function setDimenstionCanvas(height){
-            hauteurBlock = Math.floor(height / (hauteurGrid+1));
-            console.log('hauteurBlock ' + hauteurBlock);
-            width = hauteurBlock * (largeurGrid + 1);
-            canvas.width = width; 
-            largeurEcran = width;    
-            $("#canvas").css('width', width + 'px');
-
-            height = hauteurBlock * (hauteurGrid + 1);
-            canvas.height = height;   
-            hauteurEcran = height;
-            $("#canvas").css('height', height + 'px'); 
-        }
-
-        setDimenstionCanvas(wh * 0.8);
+        var height = hauteurBlock * (hauteurGrid + 1);
+        canvas.height = height;   
+        hauteurEcran = height;
+        $("#canvas").css('height', height + 'px');
+        
+        canvasNext.width    =  parseInt($("#score-jeu").css('width')); 
+        canvasNext.height   = parseInt($("#score-jeu").css('height')); 
     }
 
     // Initialise la grille de jeu
@@ -130,11 +134,11 @@ $(document).ready(function () {
     }
 
     // Dessine une piece si toutes les cases sont libre
-    function drawPiece(x, y, piece) {
+    function drawPiece(ctx, x, y, piece) {
         if (isEmptyPiece(x, y, piece)) {
             eachBlocksFromPiece(x, y, piece, function(x,y){
                 if (isEmptyBlock(x,y)) {
-                    drawBlock(x, y, piece.color);
+                    drawBlock(ctx, x, y, piece.color);
                 }
             });
             return true;
@@ -144,7 +148,7 @@ $(document).ready(function () {
     }
 
     // Dessine un block
-    function drawBlock(x, y, color, redraw) {
+    function drawBlock(ctx, x, y, color, redraw) {
         if (isEmptyBlock(x, y) || redraw == true) {
             ctx.fillStyle=color;
             ctx.fillRect(x, y, hauteurBlock, hauteurBlock);
@@ -179,7 +183,7 @@ $(document).ready(function () {
         return result;
     }
 
-    // Boucle sur les blocks d'une piece et retour un tableau avec les coordonn�es des blocks d'une piece
+    // Boucle sur les blocks d'une piece et retour un tableau avec les coordonnees des blocks d'une piece
     function eachBlocksFromPiece(x, y, piece, fn, direction){
         if( typeof(direction) == 'undefined' ){
             direction = piece.direction;
@@ -205,15 +209,24 @@ $(document).ready(function () {
         for (var a = 0; a < grid.length; a++) {
             for (var b = 0; b < grid[a].length; b++) {
                 if (grid[a][b] != '') {
-                    drawBlock(a * hauteurBlock, b * hauteurBlock, grid[a][b], true);
+                    drawBlock(ctx, a * hauteurBlock, b * hauteurBlock, grid[a][b], true);
                 }
             }
         }
     }
 
-    // Cr�ation d'un nouvelle piece
+    // Creation d'un nouvelle piece
     function newPiece() {
-        piece = getRandomPiece();
+        if (piece == ''){
+            piece = getRandomPiece();
+            nextPiece = getRandomPiece();
+            drawPiece(ctxNext, (canvasNext.width / 4) , (canvasNext.height / 4) , nextPiece);
+        } else {
+            piece = nextPiece;
+            nextPiece = getRandomPiece();
+            ctxNext.clearRect(-1, -1, canvasNext.width + 2, canvasNext.height + 2);
+            drawPiece(ctxNext, (canvasNext.width / 4) , (canvasNext.height / 4) , nextPiece);
+        }
         var i = 0;
         var gridCase;
         x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0;
@@ -225,19 +238,18 @@ $(document).ready(function () {
                 }
                 if (isEmptyPiece(x,y,piece)) {
                     clearGrid();
-                    drawPiece(x,y,piece);
+                    drawPiece(ctx,x,y,piece);
                 } else {
                     eachBlocksFromPiece(x, y-hauteurBlock, piece, function(x,y){
                         gridCase = getCase(x,y);
                         grid[gridCase.x][gridCase.y] = piece.color;
                     });
-    //                                majScore(10);
                     clearInterval(down);
                     if (i != 0) {
                         newPiece();
                     } else {
-                        drawPiece(x,y,piece);
-    //                                    alert('GAME OVER. Score : ' + score);
+                        drawPiece(ctx,x,y,piece);
+                        alert('GAME OVER. Score : ' + score);
                     }
                 } 
                 i++;
@@ -245,7 +257,7 @@ $(document).ready(function () {
             } else {
                 i++;
             }
-        }, (multiplicateurVitesse * 8) - (level * (multiplicateurVitesse/3)));
+        }, (multiplicateurVitesse  - (level * 3 )));
     }
 
     // efface toutes les cases de la grille qui sont libre
@@ -255,7 +267,7 @@ $(document).ready(function () {
         if(isEmptyPiece(x, y, piece, direction)) {
             piece.direction = direction;
             clearGrid();
-            drawPiece(x,y,piece);
+            drawPiece(ctx,x,y,piece);
         }
     }
 
@@ -312,14 +324,14 @@ $(document).ready(function () {
                 if (isEmptyPiece(x - hauteurBlock,y,piece)) {
                     x -= hauteurBlock;
                     clearGrid();
-                    drawPiece(x,y,piece);
+                    drawPiece(ctx,x,y,piece);
                 }
                 break;
             case KEY.RIGHT:
                 if (isEmptyPiece(x + hauteurBlock,y,piece)) {
                     x += hauteurBlock;
                     clearGrid();
-                    drawPiece(x,y,piece);
+                    drawPiece(ctx,x,y,piece);
                 }
                 break;
             case KEY.UP:
@@ -410,11 +422,11 @@ $(document).ready(function () {
             bouge1 = newD - testB;
             testB = testB + bouge1;
             if (bouge1 > 0) {
-                for (i = 0; i <= bouge1; i++) {
+                for (i = 0; i < bouge1; i++) {
                     if (isEmptyPiece(x + hauteurBlock, y, piece)) {
                         x += hauteurBlock;
                         clearGrid();
-                        drawPiece(x, y, piece);
+                        drawPiece(ctx, x, y, piece);
                     }
                 }
                 debutDoigtY = finDoigtY;
@@ -424,11 +436,11 @@ $(document).ready(function () {
             bouge2 = newD - testD;
             testD = testD + bouge2;
             if (bouge2 < 0) {
-                for (i = bouge2; i <= 0; i++) {
+                for (i = bouge2; i < 0; i++) {
                     if (isEmptyPiece(x - hauteurBlock, y, piece)) {
                         x -= hauteurBlock;
                         clearGrid();
-                        drawPiece(x, y, piece);
+                        drawPiece(ctx, x, y, piece);
                     }
                 }
                 debutDoigtY = finDoigtY;
@@ -436,7 +448,7 @@ $(document).ready(function () {
             }
         } else {
             if (debutDoigtY < finDoigtY) {
-                if ((finDoigtY > debutDoigtY && finDoigt - 40 < debutDoigt) || (finDoigtY > debutDoigtY && finDoigt + 40 > debutDoigt))
+//                if ((finDoigtY > debutDoigtY && finDoigt - 40 < debutDoigt) || (finDoigtY > debutDoigtY && finDoigt + 40 > debutDoigt))
                     speed = true;
             }
         }
