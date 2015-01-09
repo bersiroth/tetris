@@ -9,18 +9,18 @@ $(document).ready(function () {
     //
     // TODO 
     //
+    // calculer si la vitesse est bien egal au spec
     // fonction pause (touche dans le tableau KEY
     // Augmentation de la dificulte
+    // Ajouter un bouton pour lancer le jeu et un pour relancer
     // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
     // Recoder la prise en charge du tactile 
     // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
     // Menage dans les variables
-    // Ajouter un bouton pour lancer le jeu et un pour relancer
-    // Affichage de la prochaine piece
-    // Afficher un tableau des meilleur score
     // Affichage de la zone de drop
     // Menu d'option (taille de la grille, difficulte, couleur)
+    // Mode tactile avec touche ou appuyer
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
@@ -85,7 +85,7 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        var height = screen.height * 0.8;
+        var height = screen.height * 0.6;
         
         hauteurBlock = Math.floor(height / (hauteurGrid+1));
         console.log('hauteurBlock ' + hauteurBlock);
