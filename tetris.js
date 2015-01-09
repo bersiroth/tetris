@@ -4,24 +4,23 @@ $(document).ready(function () {
     //
     // Score : 
     // Taille grille :
-    // Vitesse : 
+    // Vitesse : Au niveau 0 on peut faire 5-6 déplacements latéraux avant que la pièce tombe d'un rang, au niveau 9 on ne peut plus faire que 1-2 mouvements latéraux
     // Couleur : 47FFFF = cyan (S), 0000FF = blue(O), FFFF00 = yellow(J), 00FF00 = green(T), 8601FF = violet(L), FF7F00 = orange(Z), FF0000 = red (I)
     //
     // TODO 
     //
-    // Prise en charge du tactile :
-    //                  precision (en cours)
-    //                  descente
-    //                  rotation
-    // recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
+    // fonction pause (touche dans le tableau KEY
+    // Augmentation de la dificulte
+    // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
+    // Recoder la prise en charge du tactile 
+    // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
-    // Apparition des pieces au mileu
-    // Revoir la vitesse par raport a la taille de lecran
-    // Ajouter un bouton pour lancer le jeu un pour pause et un pour relancer
+    // Menage dans les variables
+    // Ajouter un bouton pour lancer le jeu et un pour relancer
     // Affichage de la prochaine piece
     // Afficher un tableau des meilleur score
     // Affichage de la zone de drop
-    // Menu d'option (taille de la grille, difficult�, couleur)
+    // Menu d'option (taille de la grille, difficulte, couleur)
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
@@ -49,12 +48,15 @@ $(document).ready(function () {
     var Z = {color: '#FF7F00', blocks: ['4620', '6C00', '8C40', '06C0'], direction : 0};
 
     document.addEventListener('keydown', keydown, false);
+    document.addEventListener('keyup', keyup, false);
+    
     var KEY = {ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
     var canvas = document.getElementById("canvas");
     var canvasNext = document.getElementById("next-piece-canvas");
     var ctx = canvas.getContext("2d");
     var ctxNext = canvasNext.getContext("2d");
     ctx.lineWidth = 1;
+    ctxNext.lineWidth = 1;
     var pieceList = [I, J, O, L, S, T, Z];                  // la liste de pieces
     var largeurEcran;                                       // en px
     var hauteurEcran;                                       // en px
@@ -71,6 +73,7 @@ $(document).ready(function () {
     var score = 0;
     var line = 0;
     var level = 0;
+    var pause = false;
 
     // Lance le jeu
     function startGame(){
@@ -112,7 +115,7 @@ $(document).ready(function () {
         }
     }
 
-    // Selectionne al�atoirement une piece
+    // Selectionne aleatoirement une piece
     function getRandomPiece(){
         var random = Math.floor(Math.random() * pieceList.length);
         return pieceList[random];
@@ -232,30 +235,32 @@ $(document).ready(function () {
         x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0;
         deleteLine();
         var down = setInterval(function () {
-            if (i == 0 || i%multiplicateurVitesse == 0 || speed == true) {
-                if (i != 0) {
-                    y += hauteurBlock;
-                }
-                if (isEmptyPiece(x,y,piece)) {
-                    clearGrid();
-                    drawPiece(ctx,x,y,piece);
-                } else {
-                    eachBlocksFromPiece(x, y-hauteurBlock, piece, function(x,y){
-                        gridCase = getCase(x,y);
-                        grid[gridCase.x][gridCase.y] = piece.color;
-                    });
-                    clearInterval(down);
+            if(pause == false) {
+                if (i == 0 || i%multiplicateurVitesse == 0 || speed == true) {
                     if (i != 0) {
-                        newPiece();
-                    } else {
-                        drawPiece(ctx,x,y,piece);
-                        alert('GAME OVER. Score : ' + score);
+                        y += hauteurBlock;
                     }
-                } 
-                i++;
-                speed = false;
-            } else {
-                i++;
+                    if (isEmptyPiece(x,y,piece)) {
+                        clearGrid();
+                        drawPiece(ctx,x,y,piece);
+                    } else {
+                        eachBlocksFromPiece(x, y-hauteurBlock, piece, function(x,y){
+                            gridCase = getCase(x,y);
+                            grid[gridCase.x][gridCase.y] = piece.color;
+                        });
+                        clearInterval(down);
+                        if (i != 0) {
+                            newPiece();
+                        } else {
+                            drawPiece(ctx,x,y,piece);
+                            alert('GAME OVER. Score : ' + score);
+                        }
+                    } 
+                    i++;
+                    speed = false;
+                } else {
+                    i++;
+                }
             }
         }, (multiplicateurVitesse  - (level * 3 )));
     }
@@ -334,16 +339,27 @@ $(document).ready(function () {
                     drawPiece(ctx,x,y,piece);
                 }
                 break;
-            case KEY.UP:
-                changeDirection(piece);
-                break;
             case KEY.DOWN:
                 speed = true;
                 break;
-    //                        case 65:
-    //                            line += 10;
-    //                            console.debug('------------------------');
-    //                            break;
+            case 80:
+                if (pause){
+                    pause = false;
+                    $("#titre").html('Tetris HTML');
+                } else {
+                    pause = true ;
+                    $("#titre").html('Tetris HTML (PAUSE)');
+                }
+                break;
+        }
+    }
+    
+    // Gestion des touches du clavier
+    function keyup(ev) {
+        switch (ev.keyCode) {
+            case KEY.UP:
+                changeDirection(piece);
+                break;
         }
     }
 
@@ -386,6 +402,7 @@ $(document).ready(function () {
     var finDoigtY;
     var dateDebut;
     var testDate = false;
+    var lastEnd;
 
     document.body.addEventListener('touchstart', function(event) {
                                             event.preventDefault(); 
@@ -396,10 +413,14 @@ $(document).ready(function () {
     document.body.addEventListener('touchmove',tactile,false); 
     document.body.addEventListener('touchend', function(event) { 
                                             event.preventDefault(); 
-                                            if (new Date().getTime() - dateDebut < 90) {
-                                                console.log('retation');
+//                                            console.log('current : ' + new Date().getTime());
+//                                            console.log('end : ' + lastEnd);
+//                                            console.log('diff : ' + (new Date().getTime() - lastEnd));
+//                                            console.log('--------------');
+                                            if ((new Date().getTime() - lastEnd) < 200) {
                                                 changeDirection(piece);
                                             }
+                                            lastEnd = new Date().getTime();
                                         }, false); 
 
     // efface toutes les cases de la grille qui sont libre
