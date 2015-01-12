@@ -10,7 +10,7 @@ $dsn = 'mysql:dbname=tetris;host=localhost';
 $user = 'root';
 $password = '';
 
-$query = "select * FROM `tetris`.`score` order by date limit 0,10;";
+$query = "select * FROM `score` order by date limit 0,10;";
 
 //die('ok');
 try {

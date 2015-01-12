@@ -111,6 +111,8 @@ $(document).ready(function () {
     function startGame(){
         piece = '';
         score = 0;
+        line = 0;
+        level = 0;
         initCanvas();
         majScore(0);
         initGrid();

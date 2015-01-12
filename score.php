@@ -10,7 +10,7 @@ $dsn = 'mysql:dbname=tetris;host=localhost';
 $user = 'root';
 $password = '';
 
-$query = "INSERT INTO  `tetris`.`score` (`id` ,`pseudo` ,`score` ,`level` ,`difficulte` ,`date`)
+$query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`level` ,`difficulte` ,`date`)
           VALUES (NULL ,'" . $_POST["pseudo"] . "',  '" . $_POST["score"] . "',  '1',  'facile',  now());";
 
 try {
