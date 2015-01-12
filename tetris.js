@@ -6,19 +6,30 @@ $(document).ready(function () {
     // Taille grille :
     // Vitesse : Au niveau 0 on peut faire 5-6 déplacements latéraux avant que la pièce tombe d'un rang, au niveau 9 on ne peut plus faire que 1-2 mouvements latéraux
     // Couleur : 47FFFF = cyan (S), 0000FF = blue(O), FFFF00 = yellow(J), 00FF00 = green(T), 8601FF = violet(L), FF7F00 = orange(Z), FF0000 = red (I)
-    //
+    // Generation piece aleatoire : The I and O spawn in the middle columns
+    // Emplacement de depart : The I and O spawn in the middle columns
+    //                         The rest spawn in the left-middle columns
+    //                         The tetrominoes spawn horizontally and with their flat side pointed down
+    // 
     // TODO 
     //
+    // Musique (en cours)
+    // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
+    // The tetrominoes spawn horizontally and with their flat side pointed down.
+    // The I and O spawn in the middle columns
+    // The rest spawn in the left-middle columns
     // calculer si la vitesse est bien egal au spec
-    // fonction pause (touche dans le tableau KEY
+    // fonction pause (touche dans le tableau KEY)
     // Augmentation de la dificulte
     // Ajouter un bouton pour lancer le jeu et un pour relancer
-    // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
     // Recoder la prise en charge du tactile 
     // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
     // Menage dans les variables
+    // Menage dans les variables
+    // Changement de couleur entre les level
     // Affichage de la zone de drop
+    // Mode de jeu avec des cases deja presente
     // Menu d'option (taille de la grille, difficulte, couleur)
     // Mode tactile avec touche ou appuyer
     // Mode multijoueur local ccoperation
@@ -74,6 +85,7 @@ $(document).ready(function () {
     var line = 0;
     var level = 0;
     var pause = false;
+    var hard = false;
 
     // Lance le jeu
     function startGame(){
@@ -85,7 +97,7 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        var height = screen.height * 0.6;
+        var height = screen.height * 0.7;
         
         hauteurBlock = Math.floor(height / (hauteurGrid+1));
         console.log('hauteurBlock ' + hauteurBlock);
@@ -100,8 +112,8 @@ $(document).ready(function () {
         hauteurEcran = height;
         $("#canvas").css('height', height + 'px');
         
-        canvasNext.width    =  parseInt($("#score-jeu").css('width')); 
-        canvasNext.height   = parseInt($("#score-jeu").css('height')); 
+        canvasNext.width    = hauteurBlock * 5; 
+        canvasNext.height   = hauteurBlock * 5; 
     }
 
     // Initialise la grille de jeu
@@ -111,6 +123,9 @@ $(document).ready(function () {
             grid[a] = new Array();
             for (var b = 0; b <= hauteurGrid; b++) {
                 grid[a][b] = '';
+                if (b > (hauteurGrid/2) && (Math.random() * 9) > 4 && hard == true) {
+                    grid[a][b] = 'grey';
+                }
             }
         }
     }
@@ -250,10 +265,18 @@ $(document).ready(function () {
                         });
                         clearInterval(down);
                         if (i != 0) {
+                            var sound = new Audio();
+                            sound.src = 'chute-block.mp3';
+                            sound.volume = 0.5;
+                            sound.play();
                             newPiece();
                         } else {
                             drawPiece(ctx,x,y,piece);
-                            alert('GAME OVER. Score : ' + score);
+                            document.getElementById("mp3").pause();
+                            var sound = new Audio();
+                            sound.src = 'game-over.mp3';
+                            sound.volume = 0.5;
+                            sound.play();
                         }
                     } 
                     i++;
@@ -262,7 +285,7 @@ $(document).ready(function () {
                     i++;
                 }
             }
-        }, (multiplicateurVitesse  - (level * 3 )));
+        }, (multiplicateurVitesse  - (level * 3.5 )));
     }
 
     // efface toutes les cases de la grille qui sont libre
@@ -319,6 +342,12 @@ $(document).ready(function () {
                 majScore(1200*(level+1));
                 break;
         }
+        if (nbLine > 0) {
+            var sound = new Audio();
+            sound.src = 'ligne.mp3';
+            sound.volume = 0.5;
+            sound.play();
+        }
 
     }
 
@@ -330,6 +359,10 @@ $(document).ready(function () {
                     x -= hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
+                            var sound = new Audio();
+                            sound.src = 'straf.mp3';
+                            sound.volume = 0.5;
+                            sound.play();
                 }
                 break;
             case KEY.RIGHT:
@@ -337,19 +370,17 @@ $(document).ready(function () {
                     x += hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
+                            var sound = new Audio();
+                            sound.src = 'straf.mp3';
+                            sound.volume = 0.5;
+                            sound.play();
                 }
                 break;
             case KEY.DOWN:
                 speed = true;
                 break;
             case 80:
-                if (pause){
-                    pause = false;
-                    $("#titre").html('Tetris HTML');
-                } else {
-                    pause = true ;
-                    $("#titre").html('Tetris HTML (PAUSE)');
-                }
+                setPause();
                 break;
         }
     }
@@ -359,22 +390,28 @@ $(document).ready(function () {
         switch (ev.keyCode) {
             case KEY.UP:
                 changeDirection(piece);
+                            var sound = new Audio();
+                            sound.src = 'rotation.mp3';
+                            sound.volume = 0.5;
+                            sound.play();
                 break;
         }
     }
 
-    var ancien = 0;
-    var ancien2 = 0;
+//    var ancien = 0;
+//    var ancien2 = 0;
     
     // efface toutes les cases de la grille qui sont libre
     function getNbLineForUp() {
-        var nb = ((level*10)+10);
-        if (nb != ancien2){
-            ancien2 = nb;
-            nb = nb + ancien;
-            ancien = nb;
-        }
-        return ancien;
+//        var nb = ((level*10)+10);
+//        if (nb != ancien2){
+//            ancien2 = nb;
+//            nb = nb + ancien;
+//            ancien = nb;
+//        }
+//        return ancien;
+//        var ret = (level == 0 ) ? 10 : 
+        return (level + 1) * 10;
     }
 
     // efface toutes les cases de la grille qui sont libre
@@ -386,10 +423,10 @@ $(document).ready(function () {
             nbLine4Up = getNbLineForUp();
         }
         $("#score-jeu").html(
-                "<h2>Score :  " + score + "</h2>" +
-                "<h2>Ligne :  " + line + "</h2>"  +
-                "<h2>Level :  " + level + "</h2>" +
-                "<h2>Next :  " + (nbLine4Up - line) + "</h2>"
+                "<div>Score :  " + score + "</div>" +
+                "<div>Ligne :  " + line + "</div>"  +
+                "<div>Level :  " + level + "</div>" +
+                "<div>Next :  " + (nbLine4Up - line) + "</div>"
         );
 
     }
@@ -474,6 +511,24 @@ $(document).ready(function () {
             }
         }
     }
+    
+    function setPause() {
+        if (pause){
+            pause = false;
+            $("#titre").html('Tetris HTML');
+            document.getElementById("mp3").play();
+        } else {
+            pause = true ;
+            $("#titre").html('Tetris HTML (PAUSE)');
+            document.getElementById("mp3").pause();
+        }
+    }
+    
+    $(window).on('blur',function(){
+        if(!pause) setPause();
+    }).on('focus',function(){
+        if(pause) setPause();
+    });
     
     startGame();
 });

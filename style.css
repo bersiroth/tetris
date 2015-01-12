@@ -1,3 +1,83 @@
+html, address,
+blockquote,
+body, dd, div,
+dl, dt, fieldset, form,
+frame, frameset,
+h1, h2, h3, h4,
+h5, h6, noframes,
+ol, p, ul, center,
+dir, hr, menu, pre   { display: block; unicode-bidi: embed }
+li              { display: list-item }
+head            { display: none }
+table           { display: table }
+tr              { display: table-row }
+thead           { display: table-header-group }
+tbody           { display: table-row-group }
+tfoot           { display: table-footer-group }
+col             { display: table-column }
+colgroup        { display: table-column-group }
+td, th          { display: table-cell }
+caption         { display: table-caption }
+th              { font-weight: bolder; text-align: center }
+caption         { text-align: center }
+body            { margin: 8px }
+h1              { font-size: 2em; margin: .67em 0 }
+h2              { font-size: 1.5em; margin: .75em 0 }
+h3              { font-size: 1.17em; margin: .83em 0 }
+h4, p,
+blockquote, ul,
+fieldset, form,
+ol, dl, dir,
+menu            { margin: 1.12em 0 }
+h5              { font-size: .83em; margin: 1.5em 0 }
+h6              { font-size: .75em; margin: 1.67em 0 }
+h1, h2, h3, h4,
+h5, h6, b,
+strong          { font-weight: bolder }
+blockquote      { margin-left: 40px; margin-right: 40px }
+i, cite, em,
+var, address    { font-style: italic }
+pre, tt, code,
+kbd, samp       { font-family: monospace }
+pre             { white-space: pre }
+button, textarea,
+input, select   { display: inline-block }
+big             { font-size: 1.17em }
+small, sub, sup { font-size: .83em }
+sub             { vertical-align: sub }
+sup             { vertical-align: super }
+table           { border-spacing: 2px; }
+thead, tbody,
+tfoot           { vertical-align: middle }
+td, th, tr      { vertical-align: inherit }
+s, strike, del  { text-decoration: line-through }
+hr              { border: 1px inset }
+ol, ul, dir,
+menu, dd        { margin-left: 40px }
+ol              { list-style-type: decimal }
+ol ul, ul ol,
+ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
+u, ins          { text-decoration: underline }
+br:before       { content: "\A"; white-space: pre-line }
+center          { text-align: center }
+:link, :visited { text-decoration: underline }
+:focus          { outline: thin dotted invert }
+
+/* Begin bidirectionality settings (do not change) */
+BDO[DIR="ltr"]  { direction: ltr; unicode-bidi: bidi-override }
+BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
+
+*[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
+*[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
+
+@media print {
+  h1            { page-break-before: always }
+  h1, h2, h3,
+  h4, h5, h6    { page-break-after: avoid }
+  ul, ol, dl    { page-break-before: avoid }
+}
+
+
 body {
     background-color:#999999;
 }
@@ -13,7 +93,7 @@ body {
 
 #titre {
     margin: 1% auto;
-    width: 50%;
+    width: 70%;
 }
 
 #canvas { 
@@ -23,29 +103,34 @@ body {
     background: black;
 }
     
-#next-piece, #score-jeu, #menu-jeu {
+#score-jeu, #menu-jeu {
     border: 1px solid black;
-    width: 29%;
-    height: 20%;
+    width: 33%;
     background: aliceblue;
     float: left;
-    margin: 0 0 4.5% 4.5%;
+    margin: 0 0 3.5% 4.5%;
     padding: 2%;
 }
 
 #next-piece {
     box-shadow: 10px 10px 10px #999; 
     border: 1px solid #333; 
-    background: black
+    float: left;
+    background: black;
+    margin: 0 0 3.5% 9%;
 }
 
-@media screen and (min-height: 300px)  { body { font-size: 2px  ;} #page {height : 315px} } 
-@media screen and (min-height: 400px)  { body { font-size: 4px  ;} #page {height : 415px} } 
-@media screen and (min-height: 500px)  { body { font-size: 6px  ;} #page {height : 515px} } 
-@media screen and (min-height: 600px)  { body { font-size: 8px  ;} #page {height : 615px} } 
-@media screen and (min-height: 700px)  { body { font-size: 10px ;} #page {height : 715px} } 
-@media screen and (min-height: 800px)  { body { font-size: 12px ;} #page {height : 815px} }   
-@media screen and (min-height: 900px)  { body { font-size: 14px ;} #page {height : 915px} }   
-@media screen and (min-height: 1000px) { body { font-size: 16px ;} #page {height : 1050px} }   
-@media screen and (min-height: 1100px) { body { font-size: 18px ;} #page {height : 1150px} }   
-@media screen and (min-height: 1200px) { body { font-size: 20px ;} #page {height : 1250px} }   
+#score-jeu div {
+    font-weight:bold;
+}
+
+@media screen and (min-height: 300px)  { body { font-size: 6px ;} #page {height : 315px} } 
+@media screen and (min-height: 400px)  { body { font-size: 8px ;} #page {height : 415px} } 
+@media screen and (min-height: 500px)  { body { font-size: 10px ;} #page {height : 515px} } 
+@media screen and (min-height: 600px)  { body { font-size: 12px ;} #page {height : 615px} } 
+@media screen and (min-height: 700px)  { body { font-size: 14px ;} #page {height : 715px} } 
+@media screen and (min-height: 800px)  { body { font-size: 16px ;} #page {height : 815px} }   
+@media screen and (min-height: 900px)  { body { font-size: 18px ;} #page {height : 915px} }   
+@media screen and (min-height: 1000px) { body { font-size: 20px ;} #page {height : 1050px} }   
+@media screen and (min-height: 1100px) { body { font-size: 22px ;} #page {height : 1150px} }   
+@media screen and (min-height: 1200px) { body { font-size: 24px ;} #page {height : 1250px} }   
