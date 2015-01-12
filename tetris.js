@@ -13,9 +13,11 @@ $(document).ready(function () {
     // 
     // TODO 
     //
-    // Musique (en cours) Ok
-    // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
+    // Musique (en cours) OK
+    // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? OK
+    // 
     // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique
+    // Ajouter le device dans la table score
     // Commencer au level 1 et non 0
     // Un menu avant la partie avec le choix du level de départ et de la difficulté
     // Score de depart en raport a la difficulté :
@@ -44,7 +46,6 @@ $(document).ready(function () {
     // Recoder la prise en charge du tactile 
     // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
-    // Menage dans les variables
     // Menage dans les variables
     // Changement de couleur entre les level
     // Affichage de la zone de drop
@@ -81,6 +82,7 @@ $(document).ready(function () {
     document.addEventListener('keyup', keyup, false);
     
     var KEY = {ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
+    var sounds = {musique: 0, chute: 0, gameOver: 0, rotation: 0, straf: 0, ligne: 0, levelUp : 0};
     var canvas = document.getElementById("canvas");
     var canvasNext = document.getElementById("next-piece-canvas");
     var ctx = canvas.getContext("2d");
@@ -106,6 +108,8 @@ $(document).ready(function () {
     var pause = false;
     var hard = false;
     var popupUp = false;
+    var musique = false;
+    var sound = false;
 
     // Lance le jeu
     function startGame(){
@@ -119,6 +123,7 @@ $(document).ready(function () {
         newPiece();
     } 
 
+    // Ouvre une popup pour demander le pseudo a la fin de la partie
     function popup() {
         if (!popupUp) {
             $("#popup").removeClass('popupOff'); 
@@ -133,22 +138,15 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-//        console.log('height ' + screen.height + ' width ' + screen.width);
-//        console.log('height ' + window.outerHeight + ' width ' + window.outerWidth);
-//        console.debug(window);
         if (window.outerHeight < window.outerWidth) {
             var height = window.outerHeight * 0.7;
-//            console.log('height ' + height);
             hauteurBlock = Math.floor(height / (hauteurGrid+1));
             var nbBlockNext = 6;
         } else {
             var width = window.outerWidth * 0.5;
-//            console.log('width ' + width);
             hauteurBlock = Math.floor(width / (largeurGrid+1));
             var nbBlockNext = 4;
         }
-        
-//        console.log('hauteurBlock ' + hauteurBlock);
         
         var width = hauteurBlock * (largeurGrid + 1);
         canvas.width = width; 
@@ -162,6 +160,11 @@ $(document).ready(function () {
         
         canvasNext.width    = hauteurBlock * nbBlockNext; 
         canvasNext.height   = hauteurBlock * nbBlockNext; 
+    }
+    
+    // Initialise les sons et les musiques du jeu
+    function initSound() {
+        sounds
     }
 
     // Initialise la grille de jeu
@@ -447,24 +450,13 @@ $(document).ready(function () {
                 break;
         }
     }
-
-//    var ancien = 0;
-//    var ancien2 = 0;
     
-    // efface toutes les cases de la grille qui sont libre
+    // return le nombre de ligne necessaire pour changer de level
     function getNbLineForUp() {
-//        var nb = ((level*10)+10);
-//        if (nb != ancien2){
-//            ancien2 = nb;
-//            nb = nb + ancien;
-//            ancien = nb;
-//        }
-//        return ancien;
-//        var ret = (level == 0 ) ? 10 : 
         return (level + 1) * 10;
     }
 
-    // efface toutes les cases de la grille qui sont libre
+    // mise a jour du score
     function majScore(newScore){
         score = score + newScore;
         var nbLine4Up = getNbLineForUp();
@@ -556,7 +548,6 @@ $(document).ready(function () {
             }
         } else {
             if (debutDoigtY < finDoigtY) {
-//                if ((finDoigtY > debutDoigtY && finDoigt - 40 < debutDoigt) || (finDoigtY > debutDoigtY && finDoigt + 40 > debutDoigt))
                     speed = true;
             }
         }
@@ -584,6 +575,7 @@ $(document).ready(function () {
 //        console.log('test');
 //    }, false);
     
+    // recuperation de maniere asynchrone des meilleures score enregistre en base
     function getScore() {
         $.ajax({
             type: "POST",
@@ -591,7 +583,6 @@ $(document).ready(function () {
         }).done(function( data ) {
             $("#scores").html('');
             var dates = JSON.parse(data);
-//            console.debug(dates);
             for (var a=0; a<dates.length; a++) {
                 var d = new Date(dates[a].date);
                 $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> <td>' + d.getDate() + '-' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + d.getMinutes() + '</td> </tr>');
@@ -599,6 +590,7 @@ $(document).ready(function () {
         });
     }
     
+    // validation du pseudo et enregistrement asynchrone du score dans la base
     document.getElementById("valider").addEventListener('click', function(){
         $.ajax({
             type: "POST",
@@ -609,6 +601,25 @@ $(document).ready(function () {
         });
         popup();
         startGame();
+    }, false);
+    
+    document.getElementById("musiqueButton").addEventListener('click', function(){
+        if (musique == false) {
+            musique = true;
+            $("#musiqueButton").html('ON');
+        } else {
+            $("#musiqueButton").html('OFF');
+            musique = false;
+        }
+    }, false);
+    document.getElementById("soundButton").addEventListener('click', function(){
+        if (sound == false) {
+            sound = true;
+            $("#soundButton").html('ON');
+        } else {
+            $("#soundButton").html('OFF');
+            sound = false;
+        }
     }, false);
     
     startGame();

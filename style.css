@@ -104,7 +104,7 @@ body {
     background: black;
 }
     
-#score-jeu, #scores, #menu-jeu {
+#score-jeu, #scores, #menu-jeu, #option {
     border: 1px solid black;
     width: 23%;
     background: aliceblue;
