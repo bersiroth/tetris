@@ -13,11 +13,30 @@ $(document).ready(function () {
     // 
     // TODO 
     //
-    // Musique (en cours)
+    // Musique (en cours) Ok
     // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? 
+    // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique
+    // Commencer au level 1 et non 0
+    // Un menu avant la partie avec le choix du level de départ et de la difficulté
+    // Score de depart en raport a la difficulté :
+    //      facile : score x 1
+    //      Moyen : score x 1.5 
+    //      Difficile : score x 2
+    // Remplir la grille avec des cases grise en cas de game over et écrire game over avec des case de couleur et un bouton rejoué
+    //      XCCCCXCCCXCXXXCXCCCX
+    //      XCXXXXCXCXCCXCCXCXXX
+    //      XCXCCXCCCXCXCXCXCCCX
+    //      XCXXCXCXCXCXXXCXCXXX
+    //      XCCCCXCXCXCXXXCXCCCX
+    //      XCCCCXCXXXCXCCCXCCCX
+    //      XCXXCXCXXXCXCXXXCXCX
+    //      XCXXCXXCXCXXCCCXCCCX
+    //      XCXXCXXCXCXXCXXXCCXX
+    //      XCCCCXXXCXXXCCCXCXCX
+    //      Une couleur pour chaque lettre 
+    //      Faire un timeout 5ms après chaque remplissage
     // The tetrominoes spawn horizontally and with their flat side pointed down.
-    // The I and O spawn in the middle columns
-    // The rest spawn in the left-middle columns
+    // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece)
     // calculer si la vitesse est bien egal au spec
     // fonction pause (touche dans le tableau KEY)
     // Augmentation de la dificulte
@@ -86,31 +105,48 @@ $(document).ready(function () {
     var level = 0;
     var pause = false;
     var hard = false;
+    var popupUp = false;
 
     // Lance le jeu
     function startGame(){
+        piece = '';
+        score = 0;
         initCanvas();
         majScore(0);
         initGrid();
         newPiece();
     } 
 
+    function popup() {
+        if (!popupUp) {
+            $("#popup").removeClass('popupOff'); 
+            $("#popup").addClass('popupOn');  
+            popupUp = true;
+        } else {
+            $("#popup").removeClass('popupOn');
+            $("#popup").addClass('popupOff'); 
+            popupUp = false;
+        }
+    }
+
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        console.log('height ' + screen.height + ' width ' + screen.width);
-        if (screen.height < screen.width) {
-            var height = screen.height * 0.8;
+//        console.log('height ' + screen.height + ' width ' + screen.width);
+//        console.log('height ' + window.outerHeight + ' width ' + window.outerWidth);
+//        console.debug(window);
+        if (window.outerHeight < window.outerWidth) {
+            var height = window.outerHeight * 0.7;
             console.log('height ' + height);
             hauteurBlock = Math.floor(height / (hauteurGrid+1));
             var nbBlockNext = 6;
         } else {
-            var width = screen.width * 0.5;
+            var width = window.outerWidth * 0.5;
             console.log('width ' + width);
             hauteurBlock = Math.floor(width / (largeurGrid+1));
             var nbBlockNext = 4;
         }
         
-        console.log('hauteurBlock ' + hauteurBlock);
+//        console.log('hauteurBlock ' + hauteurBlock);
         
         var width = hauteurBlock * (largeurGrid + 1);
         canvas.width = width; 
@@ -245,6 +281,7 @@ $(document).ready(function () {
 
     // Creation d'un nouvelle piece
     function newPiece() {
+        getScore();
         if (piece == ''){
             piece = getRandomPiece();
             nextPiece = getRandomPiece();
@@ -275,18 +312,19 @@ $(document).ready(function () {
                         });
                         clearInterval(down);
                         if (i != 0) {
-                            var sound = new Audio();
-                            sound.src = 'chute-block.mp3';
-                            sound.volume = 0.5;
-                            sound.play();
+//                            var sound = new Audio();
+//                            sound.src = 'chute-block.mp3';
+//                            sound.volume = 0.5;
+                            //sound.play();
                             newPiece();
                         } else {
                             drawPiece(ctx,x,y,piece);
-                            document.getElementById("mp3").pause();
-                            var sound = new Audio();
-                            sound.src = 'game-over.mp3';
-                            sound.volume = 0.5;
-                            sound.play();
+//                            document.getElementById("mp3").pause();
+//                            var sound = new Audio();
+//                            sound.src = 'game-over.mp3';
+//                            sound.volume = 0.5;
+                            //sound.play();
+                            popup();
                         }
                     } 
                     i++;
@@ -353,10 +391,10 @@ $(document).ready(function () {
                 break;
         }
         if (nbLine > 0) {
-            var sound = new Audio();
-            sound.src = 'ligne.mp3';
-            sound.volume = 0.5;
-            sound.play();
+//            var sound = new Audio();
+//            sound.src = 'ligne.mp3';
+//            sound.volume = 0.5;
+            //sound.play();
         }
 
     }
@@ -369,10 +407,10 @@ $(document).ready(function () {
                     x -= hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
-                            var sound = new Audio();
-                            sound.src = 'straf.mp3';
-                            sound.volume = 0.5;
-                            sound.play();
+//                            var sound = new Audio();
+//                            sound.src = 'straf.mp3';
+//                            sound.volume = 0.5;
+                            //sound.play();
                 }
                 break;
             case KEY.RIGHT:
@@ -380,10 +418,10 @@ $(document).ready(function () {
                     x += hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
-                            var sound = new Audio();
-                            sound.src = 'straf.mp3';
-                            sound.volume = 0.5;
-                            sound.play();
+//                            var sound = new Audio();
+//                            sound.src = 'straf.mp3';
+//                            sound.volume = 0.5;
+                            //sound.play();
                 }
                 break;
             case KEY.DOWN:
@@ -400,10 +438,10 @@ $(document).ready(function () {
         switch (ev.keyCode) {
             case KEY.UP:
                 changeDirection(piece);
-                            var sound = new Audio();
-                            sound.src = 'rotation.mp3';
-                            sound.volume = 0.5;
-                            sound.play();
+//                            var sound = new Audio();
+//                            sound.src = 'rotation.mp3';
+//                            sound.volume = 0.5;
+                            //sound.play();
                 break;
         }
     }
@@ -433,7 +471,7 @@ $(document).ready(function () {
             nbLine4Up = getNbLineForUp();
         }
         $("#score-jeu").html(
-                "<div>Score :  " + score + "</div>" +
+                "<div id='score'>Score :  " + score + "</div>" +
                 "<div>Ligne :  " + line + "</div>"  +
                 "<div>Level :  " + level + "</div>" +
                 "<div>Next :  " + (nbLine4Up - line) + "</div>"
@@ -539,6 +577,36 @@ $(document).ready(function () {
     }).on('focus',function(){
         if(pause) setPause();
     });
+//    window.addEventListener('resize', function(){
+//        startGame();
+//        console.log('test');
+//    }, false);
+    
+    function getScore() {
+        $.ajax({
+            type: "POST",
+            url: "getScore.php"
+        }).done(function( data ) {
+            $("#scores").html();
+            var dates = JSON.parse(data);
+            console.debug(dates);
+            for (var a=0; a<dates.length; a++) {
+                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> </tr>');
+            }
+        });
+    }
+    
+    document.getElementById("valider").addEventListener('click', function(){
+        $.ajax({
+            type: "POST",
+            url: "score.php",
+            data: { pseudo: $("#pseudo").val(), score: score }
+        }).done(function( msg ) {
+            alert( "Data Saved: " + msg );
+        });
+        popup();
+        startGame();
+    }, false);
     
     startGame();
 });

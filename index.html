@@ -10,6 +10,10 @@
     <body> 
         <div id="page">
             <h1 id="titre">Tetris HTML 5</h1>
+            <div id='popup' class="popupOff">
+                <label>Pseudo : </label> <input type="text" name="pseudo" id="pseudo" />
+                <button id="valider">Valider</button>
+            </div>
             <canvas id="canvas">
                 Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
             </canvas>
@@ -20,17 +24,23 @@
             </div>
             <div id="score-jeu">
             </div>
+            <div id="scores">
+                <h3>Best scores :</h3>
+                <table>
+                    
+                </table>
+            </div>
             <div id="menu-jeu">
                 <div>Touche P pour mettre en pause</div>
                 <h3>Regle de calcule des scores :</h3>
                 <div>
-                    1 lignes = 040  x level + 1</br>
-                    2 lignes = 100  x level + 1</br>
-                    3 lignes = 300  x level + 1</br>
-                    4 lignes = 1200 x level + 1</br>
+                    1 lignes =  40  x level</br>
+                    2 lignes = 100  x level</br>
+                    3 lignes = 300  x level</br>
+                    4 lignes = 1200 x level</br>
                 </div>
             </div>
-            <audio src="tetris.mp3" id="mp3" preload="auto" autoplay loop></audio>
+            <audio src="tetris.mp3" id="mp3" preload="auto" loop></audio>
         </div>
     </body>
 </html>
