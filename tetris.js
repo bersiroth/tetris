@@ -589,11 +589,11 @@ $(document).ready(function () {
             type: "POST",
             url: "getScore.php"
         }).done(function( data ) {
-            $("#scores").html();
+            $("#scores").html('');
             var dates = JSON.parse(data);
             console.debug(dates);
             for (var a=0; a<dates.length; a++) {
-                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> </tr>');
+                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> <td>' + dates[a].date + '</td> </tr>');
             }
         });
     }

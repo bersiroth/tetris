@@ -113,8 +113,8 @@ body {
     padding: 2%;
 }
 
-#scores td {
-    width: 75px;
+#scores td  {
+    padding-left: 7px; 
 }
 
 #next-piece {
