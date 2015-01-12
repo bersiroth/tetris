@@ -97,9 +97,19 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        var height = screen.height * 0.7;
+        console.log('height ' + screen.height + ' width ' + screen.width);
+        if (screen.height < screen.width) {
+            var height = screen.height * 0.8;
+            console.log('height ' + height);
+            hauteurBlock = Math.floor(height / (hauteurGrid+1));
+            var nbBlockNext = 6;
+        } else {
+            var width = screen.width * 0.5;
+            console.log('width ' + width);
+            hauteurBlock = Math.floor(width / (largeurGrid+1));
+            var nbBlockNext = 4;
+        }
         
-        hauteurBlock = Math.floor(height / (hauteurGrid+1));
         console.log('hauteurBlock ' + hauteurBlock);
         
         var width = hauteurBlock * (largeurGrid + 1);
@@ -112,8 +122,8 @@ $(document).ready(function () {
         hauteurEcran = height;
         $("#canvas").css('height', height + 'px');
         
-        canvasNext.width    = hauteurBlock * 5; 
-        canvasNext.height   = hauteurBlock * 5; 
+        canvasNext.width    = hauteurBlock * nbBlockNext; 
+        canvasNext.height   = hauteurBlock * nbBlockNext; 
     }
 
     // Initialise la grille de jeu
@@ -238,12 +248,12 @@ $(document).ready(function () {
         if (piece == ''){
             piece = getRandomPiece();
             nextPiece = getRandomPiece();
-            drawPiece(ctxNext, (canvasNext.width / 4) , (canvasNext.height / 4) , nextPiece);
+            drawPiece(ctxNext, 0 , 0 , nextPiece);
         } else {
             piece = nextPiece;
             nextPiece = getRandomPiece();
             ctxNext.clearRect(-1, -1, canvasNext.width + 2, canvasNext.height + 2);
-            drawPiece(ctxNext, (canvasNext.width / 4) , (canvasNext.height / 4) , nextPiece);
+            drawPiece(ctxNext, 0 , 0 , nextPiece);
         }
         var i = 0;
         var gridCase;
