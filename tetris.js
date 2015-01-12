@@ -138,12 +138,12 @@ $(document).ready(function () {
 //        console.debug(window);
         if (window.outerHeight < window.outerWidth) {
             var height = window.outerHeight * 0.7;
-            console.log('height ' + height);
+//            console.log('height ' + height);
             hauteurBlock = Math.floor(height / (hauteurGrid+1));
             var nbBlockNext = 6;
         } else {
             var width = window.outerWidth * 0.5;
-            console.log('width ' + width);
+//            console.log('width ' + width);
             hauteurBlock = Math.floor(width / (largeurGrid+1));
             var nbBlockNext = 4;
         }
@@ -591,9 +591,10 @@ $(document).ready(function () {
         }).done(function( data ) {
             $("#scores").html('');
             var dates = JSON.parse(data);
-            console.debug(dates);
+//            console.debug(dates);
             for (var a=0; a<dates.length; a++) {
-                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> <td>' + dates[a].date + '</td> </tr>');
+                var d = new Date(dates[a].date);
+                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> <td>' + d.getDate() + '-' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + d.getMinutes() + '</td> </tr>');
             }
         });
     }
