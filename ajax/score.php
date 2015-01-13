@@ -6,17 +6,20 @@
 //$user = 'bernardcabcaron';
 //$password = 'RK5SDGM3XuvR';
 
+//$dsn = 'mysql:dbname=bernardcabcaron;host=localhost';
+//$user = 'bernardcabcaron';
+//$password = 'RK5SDGM3XuvR';
+
 $dsn = 'mysql:dbname=tetris;host=localhost';
 $user = 'root';
 $password = '';
 
-$query = "select * FROM `score` order by date limit 0,10;";
+$query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`level` ,`difficulte` ,`date`)
+          VALUES (NULL ,'" . $_POST["pseudo"] . "',  '" . $_POST["score"] . "',  '1',  'facile',  now());";
 
-//die('ok');
 try {
     $dbh = new PDO($dsn, $user, $password);
-    $res = $dbh->query($query);
-    echo json_encode($res->fetchAll(PDO::FETCH_ASSOC));
+    $dbh->query($query);
 } catch (PDOException $e) {
     echo 'Connexion échouée : ' . $e->getMessage();
 }

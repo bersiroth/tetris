@@ -15,8 +15,9 @@ $(document).ready(function () {
     //
     // Musique (en cours) OK
     // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? OK
+    // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique OK
     // 
-    // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique
+    // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece)
     // Ajouter le device dans la table score
     // Commencer au level 1 et non 0
     // Un menu avant la partie avec le choix du level de départ et de la difficulté
@@ -24,21 +25,7 @@ $(document).ready(function () {
     //      facile : score x 1
     //      Moyen : score x 1.5 
     //      Difficile : score x 2
-    // Remplir la grille avec des cases grise en cas de game over et écrire game over avec des case de couleur et un bouton rejoué
-    //      XCCCCXCCCXCXXXCXCCCX
-    //      XCXXXXCXCXCCXCCXCXXX
-    //      XCXCCXCCCXCXCXCXCCCX
-    //      XCXXCXCXCXCXXXCXCXXX
-    //      XCCCCXCXCXCXXXCXCCCX
-    //      XCCCCXCXXXCXCCCXCCCX
-    //      XCXXCXCXXXCXCXXXCXCX
-    //      XCXXCXXCXCXXCCCXCCCX
-    //      XCXXCXXCXCXXCXXXCCXX
-    //      XCCCCXXXCXXXCCCXCXCX
-    //      Une couleur pour chaque lettre 
-    //      Faire un timeout 5ms après chaque remplissage
     // The tetrominoes spawn horizontally and with their flat side pointed down.
-    // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece)
     // calculer si la vitesse est bien egal au spec
     // fonction pause (touche dans le tableau KEY)
     // Augmentation de la dificulte
@@ -58,6 +45,10 @@ $(document).ready(function () {
     // Mode multijoueur online competition
     //
     // BUG
+    // 
+    // verification de la longueur du pseudo 3 carac min 
+    // pas de son game play sur ipad
+    // la pause ne met plus la musique en pause  
     // 
 
     // exemple :
@@ -82,7 +73,7 @@ $(document).ready(function () {
     document.addEventListener('keyup', keyup, false);
     
     var KEY = {ESC: 27, SPACE: 32, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
-    var sounds = {musique: 0, chute: 0, gameOver: 0, rotation: 0, straf: 0, ligne: 0, levelUp : 0};
+    var sounds = {musique: 0, chute: 0, gameOver: 0, rotation: 0, deplacement: 0, ligne: 0, levelUp: 0};
     var canvas = document.getElementById("canvas");
     var canvasNext = document.getElementById("next-piece-canvas");
     var ctx = canvas.getContext("2d");
@@ -110,6 +101,9 @@ $(document).ready(function () {
     var popupUp = false;
     var musique = false;
     var sound = false;
+    var defaultMusique = 'A';
+    var levelUp = false;
+    var historiquePiece = [0];
 
     // Lance le jeu
     function startGame(){
@@ -117,6 +111,7 @@ $(document).ready(function () {
         score = 0;
         line = 0;
         level = 0;
+        initSound();
         initCanvas();
         majScore(0);
         initGrid();
@@ -138,12 +133,14 @@ $(document).ready(function () {
 
     // Initialise le canvas en fonction de la taille de l'ecran 
     function initCanvas() {
-        if (window.outerHeight < window.outerWidth) {
-            var height = window.outerHeight * 0.7;
+        var winHeight = (window.outerHeight == 'undefined') ? screen.height : window.outerHeight;
+        var winWidth = (window.outerWidth == 'undefined') ? screen.width : window.outerWidth;
+        if (winHeight < winWidth) {
+            var height = winHeight * 0.7;
             hauteurBlock = Math.floor(height / (hauteurGrid+1));
             var nbBlockNext = 6;
         } else {
-            var width = window.outerWidth * 0.5;
+            var width = winWidth * 0.5;
             hauteurBlock = Math.floor(width / (largeurGrid+1));
             var nbBlockNext = 4;
         }
@@ -164,7 +161,20 @@ $(document).ready(function () {
     
     // Initialise les sons et les musiques du jeu
     function initSound() {
-        sounds
+        for (var name in sounds){
+            sounds[name] =  new Audio();
+            var src = (name == 'musique') ? name + defaultMusique : name;
+            sounds[name].src = 'media/son/' + src + '.mp3';
+            sounds[name].volume = 0.5;
+        }
+        sounds['musique'].loop = true;
+    }
+
+    // Joue ou stop les sons
+    function playPauseSound(name, controle, type){
+        if (eval(type) == true || controle == 'pause') {
+            (controle == 'play') ? sounds[name].play() : sounds[name].pause();
+        }
     }
 
     // Initialise la grille de jeu
@@ -180,10 +190,82 @@ $(document).ready(function () {
             }
         }
     }
+    
+    function setGridGameOver(){
+        var gridGameOver = ['XXRRRRXVVVXJXXXJXBBBXX',
+                            'XXRXXXXVXVXJJXJJXBXXXX',
+                            'XXRXRRXVVVXJXJXJXBBBXX',
+                            'XXRXXRXVXVXJXXXJXBXXXX',
+                            'XXRRRRXVXVXJXXXJXBBBXX',
+                            'XXOOOOXCXXXCXLLLXRRRXX',
+                            'XXOXXOXCXXXCXLXXXRXRXX',
+                            'XXOXXOXXCXCXXLLLXRRRXX',
+                            'XXOXXOXXCXCXXLXXXRRXXX',
+                            'XXOOOOXXXCXXXLLLXRXRXX'];
+        var i = 0;
+        var timer = 20;
+        var interval = setInterval(function(){
+            var a = 0;
+            var interval2 = setInterval(function(){
+                var t =  i - 1; 
+                switch(gridGameOver[t].substr((21-a),1)) {
+                    case 'X':
+                        grid[t][a] = 'grey';
+                        break;
+                    case 'R':
+                        grid[t][a] = '#FF0000';
+                        break;
+                    case 'V':
+                        grid[t][a] = '#00FF00';
+                        break;
+                    case 'J':
+                        grid[t][a] = '#FFFF00';
+                        break;
+                    case 'B':
+                        grid[t][a] = '#0000FF';
+                        break;
+                    case 'O':
+                        grid[t][a] = '#FF7F00';
+                        break;
+                    case 'C':
+                        grid[t][a] = '#47FFFF';
+                        break;
+                    case 'L':
+                        grid[t][a] = '#8601FF';
+                        break;
+                }
+                clearGrid();
+                if(a == (grid[t].length - 1)){
+                    if (t == (grid.length - 1)){
+                        popup();
+                    }
+                    clearInterval(interval2);
+                }
+                a += 1;
+            }, timer);
+            if(i == (grid.length - 1)){
+                clearInterval(interval);
+            }
+            i += 1;
+        }, timer * (grid[0].length + 2));
+    }
+    
 
     // Selectionne aleatoirement une piece
     function getRandomPiece(){
-        var random = Math.floor(Math.random() * pieceList.length);
+        var random;
+        var i = 0;
+        do{
+            i++;
+            random = Math.floor(Math.random() * pieceList.length);
+            if (i >= 4){
+                break;
+            }
+        }while(jQuery.inArray( random, historiquePiece ) != -1)  
+        historiquePiece.push(random);
+        if (historiquePiece.length == 5){
+            historiquePiece.splice(0, 1);
+        }
         return pieceList[random];
     }
 
@@ -317,19 +399,13 @@ $(document).ready(function () {
                         });
                         clearInterval(down);
                         if (i != 0) {
-//                            var sound = new Audio();
-//                            sound.src = 'chute-block.mp3';
-//                            sound.volume = 0.5;
-                            //sound.play();
+                            playPauseSound('chute', 'play', 'sound');
                             newPiece();
                         } else {
                             drawPiece(ctx,x,y,piece);
-//                            document.getElementById("mp3").pause();
-//                            var sound = new Audio();
-//                            sound.src = 'game-over.mp3';
-//                            sound.volume = 0.5;
-                            //sound.play();
-                            popup();
+                            playPauseSound('musique', 'pause', 'musique');
+                            playPauseSound('gameOver', 'play', 'musique');
+                            setGridGameOver();
                         }
                     } 
                     i++;
@@ -395,11 +471,12 @@ $(document).ready(function () {
                 majScore(1200*(level+1));
                 break;
         }
-        if (nbLine > 0) {
-//            var sound = new Audio();
-//            sound.src = 'ligne.mp3';
-//            sound.volume = 0.5;
-            //sound.play();
+        if (nbLine > 0 && levelUp == false) {
+            playPauseSound('ligne', 'play', 'sound');
+        }
+        if (levelUp == true) {
+            playPauseSound('levelUp', 'play', 'sound');
+            levelUp = false;
         }
 
     }
@@ -412,10 +489,7 @@ $(document).ready(function () {
                     x -= hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
-//                            var sound = new Audio();
-//                            sound.src = 'straf.mp3';
-//                            sound.volume = 0.5;
-                            //sound.play();
+                    playPauseSound('deplacement', 'play', 'sound');
                 }
                 break;
             case KEY.RIGHT:
@@ -423,10 +497,7 @@ $(document).ready(function () {
                     x += hauteurBlock;
                     clearGrid();
                     drawPiece(ctx,x,y,piece);
-//                            var sound = new Audio();
-//                            sound.src = 'straf.mp3';
-//                            sound.volume = 0.5;
-                            //sound.play();
+                    playPauseSound('deplacement', 'play', 'sound');
                 }
                 break;
             case KEY.DOWN:
@@ -443,10 +514,7 @@ $(document).ready(function () {
         switch (ev.keyCode) {
             case KEY.UP:
                 changeDirection(piece);
-//                            var sound = new Audio();
-//                            sound.src = 'rotation.mp3';
-//                            sound.volume = 0.5;
-                            //sound.play();
+                playPauseSound('rotation', 'play', 'sound');
                 break;
         }
     }
@@ -463,6 +531,7 @@ $(document).ready(function () {
         if (line >= nbLine4Up) {
             level++;
             nbLine4Up = getNbLineForUp();
+            levelUp = true;
         }
         $("#score-jeu").html(
                 "<div id='score'>Score :  " + score + "</div>" +
@@ -483,14 +552,14 @@ $(document).ready(function () {
     var testDate = false;
     var lastEnd;
 
-    document.body.addEventListener('touchstart', function(event) {
+    document.getElementById("canvas").addEventListener('touchstart', function(event) {
                                             event.preventDefault(); 
                                             debutDoigt = event.changedTouches[0].clientX;
                                             debutDoigtY = event.changedTouches[0].clientY;
                                             dateDebut = new Date().getTime();
                                         }, false); 
-    document.body.addEventListener('touchmove',tactile,false); 
-    document.body.addEventListener('touchend', function(event) { 
+    document.getElementById("canvas").addEventListener('touchmove',tactile,false); 
+    document.getElementById("canvas").addEventListener('touchend', function(event) { 
                                             event.preventDefault(); 
 //                                            console.log('current : ' + new Date().getTime());
 //                                            console.log('end : ' + lastEnd);
@@ -557,11 +626,11 @@ $(document).ready(function () {
         if (pause){
             pause = false;
             $("#titre").html('Tetris HTML');
-            document.getElementById("mp3").play();
+            playPauseSound('musique', 'play', 'musique');
         } else {
             pause = true ;
             $("#titre").html('Tetris HTML (PAUSE)');
-            document.getElementById("mp3").pause();
+            playPauseSound('musique', 'pause', 'musique');
         }
     }
     
@@ -579,13 +648,12 @@ $(document).ready(function () {
     function getScore() {
         $.ajax({
             type: "POST",
-            url: "getScore.php"
+            url: "ajax/getScore.php"
         }).done(function( data ) {
             $("#scores").html('');
             var dates = JSON.parse(data);
-            for (var a=0; a<dates.length; a++) {
-                var d = new Date(dates[a].date);
-                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td> <td>' + d.getDate() + '-' + (d.getMonth()+1) + ' ' + d.getHours() + ':' + d.getMinutes() + '</td> </tr>');
+            for (var a=0; a < dates.length; a++) {
+                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td></tr>');
             }
         });
     }
@@ -594,7 +662,7 @@ $(document).ready(function () {
     document.getElementById("valider").addEventListener('click', function(){
         $.ajax({
             type: "POST",
-            url: "score.php",
+            url: "ajax/score.php",
             data: { pseudo: $("#pseudo").val(), score: score }
         }).done(function( msg ) {
             alert( "Data Saved: " + msg );
@@ -607,9 +675,11 @@ $(document).ready(function () {
         if (musique == false) {
             musique = true;
             $("#musiqueButton").html('ON');
+            playPauseSound('musique', 'play', 'musique');
         } else {
             $("#musiqueButton").html('OFF');
             musique = false;
+            playPauseSound('musique', 'pause', 'musique');
         }
     }, false);
     document.getElementById("soundButton").addEventListener('click', function(){
@@ -621,6 +691,10 @@ $(document).ready(function () {
             sound = false;
         }
     }, false);
+    $(".choixMusique").on('click', function(){
+        sounds['musique'].src = 'media/son/' + this.id + '.mp3';
+        playPauseSound('musique', 'play', 'musique');
+    });
     
     startGame();
 });

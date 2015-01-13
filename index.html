@@ -3,9 +3,9 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="style.css"/>    
-        <script src="jquery-2.1.3.min.js"></script>
-        <script src="tetris.js"></script>
+        <link rel="stylesheet" href="css/style.css"/>    
+        <script src="js/jquery-2.1.3.min.js"></script>
+        <script src="js/tetris.js"></script>
     </head>
     <body> 
         <div id="page">
@@ -31,27 +31,36 @@
                 </table>
             </div>
             <div id="option">
-                <h3>Best scores :</h3>
                 <label>Musique : </label><button id='musiqueButton'>OFF</button><br>
                 <label>Sound : </label><button id='soundButton'>OFF</button><br>
                 <label>Theme : </label>
                 <ul> 
-                    <li><button id='themeA'>A</button></li>
-                    <li><button id='themeB'>B</button></li>
-                    <li><button id='themeC'>C</button></li>
+                    <li><button id='musiqueA' class='choixMusique'>A</button></li>
+                    <li><button id='musiqueB' class='choixMusique'>B</button></li>
+                    <li><button id='musiqueC' class='choixMusique'>C</button></li>
                 </ul>    
             </div>
             <div id="menu-jeu">
                 <div>Touche P pour mettre en pause</div>
                 <h3>Regle de calcule des scores :</h3>
                 <div>
-                    1 lignes =  40  x level</br>
-                    2 lignes = 100  x level</br>
-                    3 lignes = 300  x level</br>
-                    4 lignes = 1200 x level</br>
+                    1 lignes =  40  x level<br>
+                    2 lignes = 100  x level<br>
+                    3 lignes = 300  x level<br>
+                    4 lignes = 1200 x level<br>
+                </div>
+                <h3>Maj :</h3>
+                <div>
+                    <table>
+                        <tr><td><b>1.1</b></td><td>Ajout d'un visuel sur la prochaine piece</td>
+                        <tr><td><b>1.2</b></td><td>Ajout de la pause</td>
+                        <tr><td><b>1.3</b></td><td>Ajout de son et de la musique</td>
+                        <tr><td><b>1.4</b></td><td>Ajout d'une popup avec le pseudo pour les scores</td>
+                        <tr><td><b>1.4.1</b></td><td>Ajout d'un ecran de game over</td>
+                        <tr><td><b>1.5</b></td><td>Changement dans la generation des pieces avec les standards tetris</td>
+                    </table>
                 </div>
             </div>
-            <audio src="tetris.mp3" id="mp3" preload="auto" loop></audio>
         </div>
     </body>
 </html>
