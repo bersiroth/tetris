@@ -1,18 +1,14 @@
 <?php 
 
-//var_dump($_POST);
-
-//$dsn = 'mysql:dbname=bernardcabcaron;host=mysql51-117.perso';
-//$user = 'bernardcabcaron';
-//$password = 'RK5SDGM3XuvR';
-
-//$dsn = 'mysql:dbname=bernardcabcaron;host=localhost';
-//$user = 'bernardcabcaron';
-//$password = 'RK5SDGM3XuvR';
-
-$dsn = 'mysql:dbname=tetris;host=localhost';
-$user = 'root';
-$password = '';
+if ($_SERVER['HTTP_REFERER'] == 'http://bernard-caron.fr/') {
+    $dsn = 'mysql:dbname=bernardcabcaron;host=mysql51-117.perso';
+    $user = 'bernardcabcaron';
+    $password = 'RK5SDGM3XuvR';
+} else {
+    $dsn = 'mysql:dbname=bernardcabcaron;host=localhost';
+    $user = 'bernardcabcaron';
+    $password = 'RK5SDGM3XuvR';
+}
 
 $query = "select * FROM `score` order by score desc limit 0,10;";
 
