@@ -16,7 +16,7 @@ if ($_SERVER['HTTP_REFERER'] == 'http://bernard-caron.fr/') {
 }
 
 $query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`level` ,`difficulte` ,`date`)
-          VALUES (NULL ,'" . $_POST["pseudo"] . "',  '" . $_POST["score"] . "',  '1',  'facile',  now());";
+          VALUES (NULL ,'" . mysql_real_escape_string($_POST["pseudo"]) . "',  '" . mysql_real_escape_string($_POST["score"]) . "',  '1',  'facile',  now());";
 
 try {
     $dbh = new PDO($dsn, $user, $password);
