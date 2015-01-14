@@ -1,9 +1,9 @@
 <?php 
 
-defined('REFERER'   ,'');
-defined('DBNAME'    ,'');
-defined('HOST'      ,'');
-defined('USER'      ,'');
-defined('PASSWORD'  ,'');
+define('REFERER'   ,'');
+define('DBNAME'    ,'');
+define('HOST'      ,'');
+define('USER'      ,'');
+define('PASSWORD'  ,'');
 
 ?>
