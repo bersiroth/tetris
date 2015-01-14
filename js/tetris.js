@@ -659,7 +659,11 @@ $(document).ready(function () {
             $("#scores").html('');
             var dates = JSON.parse(data);
             for (var a=0; a < dates.length; a++) {
-                $("#scores").append('<tr> <td>' + dates[a].pseudo + '</td> <td>' + dates[a].score + '</td></tr>');
+                $("#scores").append('<tr>          <td>' + dates[a].pseudo + '</td>'
+                                                + '<td>' + dates[a].score + '</td>'
+                                                + '<td>' + dates[a].ligne + '</td>'
+                                                + '<td>' + dates[a].level + '</td>'
+                                                + '</tr>');
             }
         });
     }
