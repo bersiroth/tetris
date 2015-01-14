@@ -16,17 +16,19 @@ $(document).ready(function () {
     // Musique (en cours) OK
     // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? OK
     // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique OK
+    // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece) OK
+    // calculer si la vitesse est bien egal au spec OK
     // 
-    // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece)
+    // 
+    // Enregistrer en base le level le device et le nombre de ligne
+    // The tetrominoes spawn horizontally and with their flat side pointed down.
+    // Un menu avant la partie avec le choix du level de départ et de la difficulté
     // Ajouter le device dans la table score
     // Commencer au level 1 et non 0
-    // Un menu avant la partie avec le choix du level de départ et de la difficulté
     // Score de depart en raport a la difficulté :
     //      facile : score x 1
     //      Moyen : score x 1.5 
     //      Difficile : score x 2
-    // The tetrominoes spawn horizontally and with their flat side pointed down.
-    // calculer si la vitesse est bien egal au spec
     // fonction pause (touche dans le tableau KEY)
     // Augmentation de la dificulte
     // Ajouter un bouton pour lancer le jeu et un pour relancer
@@ -104,6 +106,7 @@ $(document).ready(function () {
     var defaultMusique = 'A';
     var levelUp = false;
     var historiquePiece = [0];
+    var difficulte = 'facile';
 
     // Lance le jeu
     function startGame(){
@@ -628,11 +631,11 @@ $(document).ready(function () {
     function setPause() {
         if (pause){
             pause = false;
-            $("#titre").html('Tetris HTML');
+            $("#titre").html('Tetris HTML 5 (ALPHA) ');
             playPauseSound('musique', 'play', 'musique');
         } else {
             pause = true ;
-            $("#titre").html('Tetris HTML (PAUSE)');
+            $("#titre").html('Tetris HTML 5 (ALPHA) (PAUSE)');
             playPauseSound('musique', 'pause', 'musique');
         }
     }
@@ -675,7 +678,12 @@ $(document).ready(function () {
         $.ajax({
             type: "POST",
             url: "ajax/score.php",
-            data: { pseudo: $("#pseudo").val(), score: score, token : token }
+            data: { pseudo      : $("#pseudo").val(), 
+                    score       : score, 
+                    ligne       : line, 
+                    level       : level, 
+                    difficulte  : difficulte, 
+                    token       : token }
         }).done(function( msg ) {
             alert( "Data Saved: " + msg );
         });
