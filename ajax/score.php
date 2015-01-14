@@ -13,15 +13,16 @@ $dsn = 'mysql:dbname=' . DBNAME . ';host=' . HOST;
 $user = USER;
 $password = PASSWORD;
 
-$query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`ligne` ,`level` ,`difficulte` ,`date`)
-          VALUES (NULL ,'" . mysql_real_escape_string($_POST["pseudo"]) . "',
-                        '" . mysql_real_escape_string($_POST["score"]) . "',  
-                        '" . mysql_real_escape_string($_POST["ligne"]) . "', 
-                        '" . mysql_real_escape_string($_POST["level"]) . "',  
-                        '" . mysql_real_escape_string($_POST["difficulte"]) . "',  now());";
+
 
 try {
     $dbh = new PDO($dsn, $user, $password);
+    $query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`ligne` ,`level` ,`difficulte` ,`date`)
+          VALUES (NULL ," . $dbh->quote($_POST["pseudo"]) . ",
+                        " . $dbh->quote($_POST["score"]) . ",  
+                        " . $dbh->quote($_POST["ligne"]) . ", 
+                        " . $dbh->quote($_POST["level"]) . ",  
+                        " . $dbh->quote($_POST["difficulte"]) . ",  now());";
     $dbh->query($query);
 } catch (PDOException $e) {
     echo 'Connexion échouée : ' . $e->getMessage();
