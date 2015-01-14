@@ -1,14 +1,10 @@
 <?php 
 
-if ($_SERVER['HTTP_REFERER'] == 'http://bernard-caron.fr/') {
-    $dsn = 'mysql:dbname=bernardcabcaron;host=mysql51-117.perso';
-    $user = 'bernardcabcaron';
-    $password = 'RK5SDGM3XuvR';
-} else {
-    $dsn = 'mysql:dbname=bernardcabcaron;host=localhost';
-    $user = 'bernardcabcaron';
-    $password = 'RK5SDGM3XuvR';
-}
+require_once '../config.php';
+
+$dsn = 'mysql:dbname=' . DBNAME . ';host=' . HOST;
+$user = USER;
+$password = PASSWORD;
 
 $query = "select * FROM `score` order by score desc limit 0,10;";
 
