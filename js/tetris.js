@@ -368,6 +368,9 @@ $(document).ready(function () {
 
     // Creation d'un nouvelle piece
     function newPiece() {
+        var localMultiplicateurVitesse = Math.floor((level >= 10) ? multiplicateurVitesse - (level * 1.6) : multiplicateurVitesse);
+        var timer = (localMultiplicateurVitesse)  - (level * 3 );
+        if (timer < 0) timer = 0;
         getScore();
         if (piece == ''){
             piece = getRandomPiece();
@@ -385,7 +388,7 @@ $(document).ready(function () {
         deleteLine();
         var down = setInterval(function () {
             if(pause == false) {
-                if (i == 0 || i%multiplicateurVitesse == 0 || speed == true) {
+                if (i == 0 || i%localMultiplicateurVitesse == 0 || speed == true) {
                     if (i != 0) {
                         y += hauteurBlock;
                     }
@@ -414,7 +417,7 @@ $(document).ready(function () {
                     i++;
                 }
             }
-        }, (multiplicateurVitesse  - (level * 3.5 )));
+        }, timer);
     }
 
     // efface toutes les cases de la grille qui sont libre
@@ -658,12 +661,21 @@ $(document).ready(function () {
         });
     }
     
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+    
     // validation du pseudo et enregistrement asynchrone du score dans la base
     document.getElementById("valider").addEventListener('click', function(){
+        var token = '1989-05-12' + Math.floor(Math.random() * 100000);
+        setCookie('token', token, 10);
         $.ajax({
             type: "POST",
             url: "ajax/score.php",
-            data: { pseudo: $("#pseudo").val(), score: score }
+            data: { pseudo: $("#pseudo").val(), score: score, token : token }
         }).done(function( msg ) {
             alert( "Data Saved: " + msg );
         });
