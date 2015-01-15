@@ -18,9 +18,8 @@ $(document).ready(function () {
     // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique OK
     // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece) OK
     // calculer si la vitesse est bien egal au spec OK
+    // Enregistrer en base le level le device et le nombre de ligne OK
     // 
-    // 
-    // Enregistrer en base le level le device et le nombre de ligne
     // The tetrominoes spawn horizontally and with their flat side pointed down.
     // Un menu avant la partie avec le choix du level de départ et de la difficulté
     // Ajouter le device dans la table score
@@ -61,6 +60,16 @@ $(document).ready(function () {
     // 0 1 1 0 | 4
     // 1 1 0 0 | 2
     // 0 0 0 0 | 1
+
+    function setDevice(){
+        var deviceList = ['android', 'iphone', 'ipad', 'ipod', 'blackberry', 'android'];
+        for(var x in deviceList) {
+            if (eval('/' + deviceList[x] + '/i').test(navigator.userAgent.toLowerCase()) === true) {
+                return deviceList[x];
+            }
+        }
+        return 'pc';
+    }
 
     // Ordre des blocks haut, droite, bas , gauche
     var I = {color: '#FF0000', blocks: ['4444', '00F0', '2222', '0F00'], direction : 0};
@@ -107,6 +116,7 @@ $(document).ready(function () {
     var levelUp = false;
     var historiquePiece = [0];
     var difficulte = 'facile';
+    var device = setDevice();
 
     // Lance le jeu
     function startGame(){
@@ -206,7 +216,7 @@ $(document).ready(function () {
                             'XXOXXOXXCXCXXLXXXRRXXX',
                             'XXOOOOXXXCXXXLLLXRXRXX'];
         var i = 0;
-        var timer = 20;
+        var timer = 15;
         var interval = setInterval(function(){
             var a = 0;
             var interval2 = setInterval(function(){
@@ -656,14 +666,19 @@ $(document).ready(function () {
             type: "POST",
             url: "ajax/getScore.php"
         }).done(function( data ) {
-            $("#scores").html('');
+            $("#scores table").html('<thead> <tr> <th> pseudo </th>'
+                                               + '<th> score </th>'
+                                               + '<th> ligne </th>'
+                                               + '<th> level </th>'
+                                               + '<th> device </th> <tr> </thead>');
             var dates = JSON.parse(data);
             for (var a=0; a < dates.length; a++) {
-                $("#scores").append('<tr>          <td>' + dates[a].pseudo + '</td>'
-                                                + '<td>' + dates[a].score + '</td>'
-                                                + '<td>' + dates[a].ligne + '</td>'
-                                                + '<td>' + dates[a].level + '</td>'
-                                                + '</tr>');
+                $("#scores table").append('<tr>  <td>' + dates[a].pseudo + '</td>'
+                                              + '<td>' + dates[a].score + '</td>'
+                                              + '<td>' + dates[a].ligne + '</td>'
+                                              + '<td>' + dates[a].level + '</td>'
+                                              + '<td>' + dates[a].device + '</td>'
+                                              + '</tr>');
             }
         });
     }
@@ -687,6 +702,7 @@ $(document).ready(function () {
                     ligne       : line, 
                     level       : level, 
                     difficulte  : difficulte, 
+                    device      : device, 
                     token       : token }
         }).done(function( msg ) {
             alert( "Data Saved: " + msg );

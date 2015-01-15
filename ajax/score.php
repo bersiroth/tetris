@@ -17,12 +17,13 @@ $password = PASSWORD;
 
 try {
     $dbh = new PDO($dsn, $user, $password);
-    $query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`ligne` ,`level` ,`difficulte` ,`date`)
+    $query = "INSERT INTO  `score` (`id` ,`pseudo` ,`score` ,`ligne` ,`level` ,`difficulte`, `device` ,`date`)
           VALUES (NULL ," . $dbh->quote($_POST["pseudo"]) . ",
                         " . $dbh->quote($_POST["score"]) . ",  
                         " . $dbh->quote($_POST["ligne"]) . ", 
                         " . $dbh->quote($_POST["level"]) . ",  
-                        " . $dbh->quote($_POST["difficulte"]) . ",  now());";
+                        " . $dbh->quote($_POST["difficulte"]) . ",  
+                        " . $dbh->quote($_POST["device"]) . ",  now());";
     $dbh->query($query);
 } catch (PDOException $e) {
     echo 'Connexion échouée : ' . $e->getMessage();
