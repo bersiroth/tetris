@@ -83,13 +83,13 @@ body {
 }
 
 #page {
-    width: 80%;
-    max-width: 1500px;
+    width: 90%;
+    /*max-width: 1500px;*/
     margin: 0 auto;
     border : 1px solid black;
     background-color:#cccccc;
     height: 1000px;
-    padding: 0 5%;
+    padding: 0 3%;
 }
 
 #titre {

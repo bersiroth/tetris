@@ -19,37 +19,33 @@ $(document).ready(function () {
     // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece) OK
     // calculer si la vitesse est bien egal au spec OK
     // Enregistrer en base le level le device et le nombre de ligne OK
+    // Ajouter le device dans la table score OK
+    // The tetrominoes spawn horizontally and with their flat side pointed down. OK
     // 
-    // The tetrominoes spawn horizontally and with their flat side pointed down.
+    // fonction pause (touche dans le tableau KEY)
     // Un menu avant la partie avec le choix du level de départ et de la difficulté
-    // Ajouter le device dans la table score
     // Commencer au level 1 et non 0
     // Score de depart en raport a la difficulté :
     //      facile : score x 1
     //      Moyen : score x 1.5 
     //      Difficile : score x 2
-    // fonction pause (touche dans le tableau KEY)
-    // Augmentation de la dificulte
     // Ajouter un bouton pour lancer le jeu et un pour relancer
-    // Recoder la prise en charge du tactile 
-    // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
-    // Recoder la fonction getNbLineForUp
-    // Menage dans les variables
     // Changement de couleur entre les level
     // Affichage de la zone de drop
-    // Mode de jeu avec des cases deja presente
     // Menu d'option (taille de la grille, difficulte, couleur)
     // Mode tactile avec touche ou appuyer
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
-    // Mode multijoueur online competition
+    // Mode multijoueur online competition    
+    // Recoder la prise en charge du tactile 
+    // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
+    // Recoder la fonction getNbLineForUp
+    // Menage dans les variables
     //
     // BUG
     // 
     // verification de la longueur du pseudo 3 carac min 
-    // pas de son game play sur ipad
-    // la pause ne met plus la musique en pause  
     // 
 
     // exemple :
@@ -73,9 +69,9 @@ $(document).ready(function () {
 
     // Ordre des blocks haut, droite, bas , gauche
     var I = {color: '#FF0000', blocks: ['4444', '00F0', '2222', '0F00'], direction : 0};
-    var J = {color: '#FFFF00', blocks: ['2E00', 'C440', '0E80', '4460'], direction : 0};
-    var O = {color: '#0000FF', blocks: ['CC00', 'CC00', 'CC00', 'CC00'], direction : 0};
-    var L = {color: '#8601FF', blocks: ['0E20', '6440', '8E00', '44C0'], direction : 0};
+    var J = {color: '#FFFF00', blocks: ['4460', '2E00', 'C440', '0E80'], direction : 0};
+    var O = {color: '#0000FF', blocks: ['0660', '0660', '0660', '0660'], direction : 0};
+    var L = {color: '#8601FF', blocks: ['6440', '8E00', '44C0', '0E20'], direction : 0};
     var S = {color: '#47FFFF', blocks: ['2640', 'C600', '4C80', '0C60'], direction : 0};
     var T = {color: '#00FF00', blocks: ['4640', '4E00', '4C40', '0E40'], direction : 0};
     var Z = {color: '#FF7F00', blocks: ['4620', '6C00', '8C40', '06C0'], direction : 0};
@@ -216,7 +212,7 @@ $(document).ready(function () {
                             'XXOXXOXXCXCXXLXXXRRXXX',
                             'XXOOOOXXXCXXXLLLXRXRXX'];
         var i = 0;
-        var timer = 15;
+        var timer = 20;
         var interval = setInterval(function(){
             var a = 0;
             var interval2 = setInterval(function(){
@@ -279,6 +275,7 @@ $(document).ready(function () {
         if (historiquePiece.length == 5){
             historiquePiece.splice(0, 1);
         }
+        pieceList[random].direction = 0;
         return pieceList[random];
     }
 
@@ -387,17 +384,21 @@ $(document).ready(function () {
         getScore();
         if (piece == ''){
             piece = getRandomPiece();
+            piece.direction = 0;
             nextPiece = getRandomPiece();
+            nextPiece.direction = 0;
             drawPiece(ctxNext, 0 , 0 , nextPiece);
         } else {
             piece = nextPiece;
+            piece.direction = 0;
             nextPiece = getRandomPiece();
+            nextPiece.direction = 0;
             ctxNext.clearRect(-1, -1, canvasNext.width + 2, canvasNext.height + 2);
             drawPiece(ctxNext, 0 , 0 , nextPiece);
         }
         var i = 0;
         var gridCase;
-        x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0;
+        x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0 - hauteurBlock;
         deleteLine();
         var down = setInterval(function () {
             if(pause == false) {
@@ -537,7 +538,7 @@ $(document).ready(function () {
     
     // return le nombre de ligne necessaire pour changer de level
     function getNbLineForUp() {
-        return (level + 1) * 10;
+        return ((level + 1) * 10) + level;
     }
 
     // mise a jour du score
@@ -638,14 +639,15 @@ $(document).ready(function () {
         }
     }
     
+    var titre = $("#titre").html();
     function setPause() {
         if (pause){
             pause = false;
-            $("#titre").html('Tetris HTML 5 (ALPHA) ');
+            $("#titre").html(titre);
             playPauseSound('musique', 'play', 'musique');
         } else {
             pause = true ;
-            $("#titre").html('Tetris HTML 5 (ALPHA) (PAUSE)');
+            $("#titre").html(titre + ' (PAUSE)');
             playPauseSound('musique', 'pause', 'musique');
         }
     }
