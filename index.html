@@ -15,6 +15,27 @@
                 <label>Pseudo : </label> <input type="text" name="pseudo" id="pseudo" />
                 <button id="valider">Valider</button>
             </div>
+            <div id='popupMenu' class="menuOff">
+                <label>Difficulté : </label>
+                <ul> 
+                    <li><input type="radio" name="choixDifficulte" value="facile" checked>Facile</li>
+                    <li><input type="radio" name="choixDifficulte" value="moyen">Moyen (Bonus score 20%)</li>
+                    <li><input type="radio" name="choixDifficulte" value="difficile">Difficile (Bonus score 50%)</li>
+                </ul> 
+                <label>Level de depart : </label>
+                <ul> 
+                    <li><input type="radio" name="choixLevel" value="0" checked>0<input type="radio" name="choixLevel" value="5">5</li>
+                    <li><input type="radio" name="choixLevel" value="1">1<input type="radio" name="choixLevel" value="6">6</li>
+                    <li><input type="radio" name="choixLevel" value="2">2<input type="radio" name="choixLevel" value="7">7</li>
+                    <li><input type="radio" name="choixLevel" value="3">3<input type="radio" name="choixLevel" value="8">8</li>
+                    <li><input type="radio" name="choixLevel" value="4">4<input type="radio" name="choixLevel" value="9">9</li>
+                </ul> 
+                <label>Affichage de la zone de drop : </label>
+                <ul> 
+                    <li><input type="radio" name="choixDrop" value="1" checked>Oui<input type="radio" name="choixDrop" value="0">Non (Bonus score 20%)</li>
+                </ul> 
+                <button id='go'>GO</button>
+            </div>
             <canvas id="canvas">
                 Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
             </canvas>

@@ -13,7 +13,7 @@ $(document).ready(function () {
     // 
     // TODO 
     //
-    // Musique (en cours) OK
+    // Musique  OK
     // Ajout d'un tableau des scores (fonction popup pour demande le pseudo + enregistrement en base) AJAX ? OK
     // Ajout bouton pour musique (on/off) son jeu (on/off) choix musique OK
     // Gestion de l'aleatoire des pieces (nouvelle piece != 4 derniere piece) OK
@@ -22,26 +22,21 @@ $(document).ready(function () {
     // Ajouter le device dans la table score OK
     // The tetrominoes spawn horizontally and with their flat side pointed down. OK
     // fonction pause (touche dans le tableau KEY) OK
+    // Affichage de la zone de drop OK
+    // Un menu avant la partie avec le choix du level de départ et de la difficulté OK
+    // Score en raport a la difficulté OK
     // 
-    // Affichage de la zone de drop
-    // Un menu avant la partie avec le choix du level de départ et de la difficulté
-    // Commencer au level 1 et non 0
-    // Score de depart en raport a la difficulté :
-    //      facile : score x 1
-    //      Moyen : score x 1.5 
-    //      Difficile : score x 2
-    // Ajouter un bouton pour lancer le jeu et un pour relancer
+    // 2 case en hauteur pour aparition de la piece et non pris en compte dans la grille (faire un contour de lespace de jeu)
+    // animation suppresion ligne
+    // Ajouter un bouton pour relancer le jeu
     // Changement de couleur entre les level
-    // 
-    // Menu d'option (taille de la grille, difficulte, couleur)
-    // 
     // Mode tactile avec touche ou appuyer
-    // 
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
-    // Mode multijoueur online competition    
-    // 
+    // Mode multijoueur online competition
+    // Commencer au level 1 et non 0
+    // Menu d'option (taille de la grille, difficulte, couleur)    
     // Recoder la prise en charge du tactile 
     // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
@@ -101,14 +96,13 @@ $(document).ready(function () {
     var hauteurGrid = 22-1;                                 // en nombre de case
     var speed = false;
     var multiplicateurVitesse = 30  ;
-    var x = (largeurEcran/2)-(2*hauteurBlock), y = 0;
+    var x, y;
     var piece = '';
     var nextPiece;
     var score = 0;
     var line = 0;
     var level = 0;
     var pause = false;
-    var hard = false;
     var popupUp = false;
     var musique = false;
     var sound = false;
@@ -117,19 +111,27 @@ $(document).ready(function () {
     var historiquePiece = [0];
     var difficulte = 'facile';
     var device = setDevice();
+    var zoneDrop = true;
+    var bonus = 1;
 
     // Lance le jeu
     function startGame(){
         piece = '';
-        score = 0;
         line = 0;
-        level = 0;
+        score = 0;
+        initBonus();
         initSound();
         initCanvas();
         majScore(0);
         initGrid();
         newPiece();
     } 
+
+    function initMenu(){
+        initCanvas();
+        $("#popupMenu").removeClass('popupOff'); 
+        $("#popupMenu").addClass('menuOn');
+    }
 
     // Ouvre une popup pour demander le pseudo a la fin de la partie
     function popup() {
@@ -197,7 +199,8 @@ $(document).ready(function () {
             grid[a] = new Array();
             for (var b = 0; b <= hauteurGrid; b++) {
                 grid[a][b] = '';
-                if (b > (hauteurGrid/2) && (Math.random() * 9) > 4 && hard == true) {
+                var hauteur = (difficulte == 'moyen') ? 2 : 4;
+                if (b > (hauteurGrid/hauteur) && (Math.random() * 9) > 4 && difficulte != 'facile') {
                     grid[a][b] = 'grey';
                 }
             }
@@ -303,10 +306,10 @@ $(document).ready(function () {
         if( typeof(type) == 'undefined' ){
             type = 'piece';
         }
-        if(type == 'piece'){
+        if(type == 'piece' && zoneDrop == true){
             dropZone(x, y, piece);
         }
-        var color = (type == 'dropZone') ? 'grey' : piece.color;
+        var color = (type == 'dropZone') ? '#333333' : piece.color;
         if(isEmptyPiece(x, y, piece)) {
             eachBlocksFromPiece(x, y, piece, function(x,y){
                 if (isEmptyBlock(x,y)) {
@@ -421,7 +424,7 @@ $(document).ready(function () {
         }
         var i = 0;
         var gridCase;
-        x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0 - hauteurBlock;
+        x = (((largeurGrid+1)/2)-2) * hauteurBlock, y = 0 ;
         deleteLine();
         var down = setInterval(function () {
             if(pause == false) {
@@ -564,8 +567,20 @@ $(document).ready(function () {
         return ((level + 1) * 10) + level;
     }
 
+    function initBonus(){
+        if (difficulte == 'moyen') {
+            bonus = 1.20;
+        } else if (difficulte == 'difficile') {
+            bonus = 1.50;
+        } else {
+            bonus = 1;
+        }
+        if (zoneDrop == false) bonus = bonus + 0.20;
+    }
+
     // mise a jour du score
     function majScore(newScore){
+        newScore = newScore * bonus;
         score = score + newScore;
         var nbLine4Up = getNbLineForUp();
         if (line >= nbLine4Up) {
@@ -730,10 +745,10 @@ $(document).ready(function () {
                     device      : device, 
                     token       : token }
         }).done(function( msg ) {
-            alert( "Data Saved: " + msg );
+//            alert( "Data Saved: " + msg );
         });
         popup();
-        startGame();
+        initMenu();
     }, false);
     
     document.getElementById("musiqueButton").addEventListener('click', function(){
@@ -767,5 +782,14 @@ $(document).ready(function () {
         playPauseSound('musique', 'play', 'musique');
     });
     
-    startGame();
+    initMenu();
+
+    $("#go").on('click', function(){
+        $("#popupMenu").removeClass('menuOn'); 
+        $("#popupMenu").addClass('popupOff');
+        difficulte = $('input[name="choixDifficulte"]:checked').val();
+        level = parseInt($('input[name="choixLevel"]:checked').val());
+        zoneDrop = ($('input[name="choixDrop"]:checked').val() == 1) ? true : false;
+        startGame();
+    });
 });
