@@ -26,7 +26,6 @@ $(document).ready(function () {
     // Un menu avant la partie avec le choix du level de départ et de la difficulté OK
     // Score en raport a la difficulté OK
     // 
-    // 2 case en hauteur pour aparition de la piece et non pris en compte dans la grille (faire un contour de lespace de jeu)
     // animation suppresion ligne
     // Ajouter un bouton pour relancer le jeu
     // Changement de couleur entre les level
@@ -710,6 +709,7 @@ $(document).ready(function () {
                                                + '<th> score </th>'
                                                + '<th> ligne </th>'
                                                + '<th> level </th>'
+                                               + '<th> difficulte </th>'
                                                + '<th> device </th> <tr> </thead>');
             var dates = JSON.parse(data);
             for (var a=0; a < dates.length; a++) {
@@ -717,6 +717,7 @@ $(document).ready(function () {
                                               + '<td>' + dates[a].score + '</td>'
                                               + '<td>' + dates[a].ligne + '</td>'
                                               + '<td>' + dates[a].level + '</td>'
+                                              + '<td>' + dates[a].difficulte + '</td>'
                                               + '<td>' + dates[a].device + '</td>'
                                               + '</tr>');
             }
