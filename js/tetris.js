@@ -21,8 +21,9 @@ $(document).ready(function () {
     // Enregistrer en base le level le device et le nombre de ligne OK
     // Ajouter le device dans la table score OK
     // The tetrominoes spawn horizontally and with their flat side pointed down. OK
+    // fonction pause (touche dans le tableau KEY) OK
     // 
-    // fonction pause (touche dans le tableau KEY)
+    // Affichage de la zone de drop
     // Un menu avant la partie avec le choix du level de départ et de la difficulté
     // Commencer au level 1 et non 0
     // Score de depart en raport a la difficulté :
@@ -31,13 +32,16 @@ $(document).ready(function () {
     //      Difficile : score x 2
     // Ajouter un bouton pour lancer le jeu et un pour relancer
     // Changement de couleur entre les level
-    // Affichage de la zone de drop
+    // 
     // Menu d'option (taille de la grille, difficulte, couleur)
+    // 
     // Mode tactile avec touche ou appuyer
+    // 
     // Mode multijoueur local ccoperation
     // Mode multijoueur local competition
     // Mode multijoueur online competition
     // Mode multijoueur online competition    
+    // 
     // Recoder la prise en charge du tactile 
     // Recoder la grille sans 0 pour ne pas faire de -1 a chaque fois                 
     // Recoder la fonction getNbLineForUp
@@ -96,7 +100,7 @@ $(document).ready(function () {
     var largeurGrid = 10-1;                                 // en nombre de case
     var hauteurGrid = 22-1;                                 // en nombre de case
     var speed = false;
-    var multiplicateurVitesse = 30;
+    var multiplicateurVitesse = 30  ;
     var x = (largeurEcran/2)-(2*hauteurBlock), y = 0;
     var piece = '';
     var nextPiece;
@@ -295,11 +299,18 @@ $(document).ready(function () {
     }
 
     // Dessine une piece si toutes les cases sont libre
-    function drawPiece(ctx, x, y, piece) {
-        if (isEmptyPiece(x, y, piece)) {
+    function drawPiece(ctx, x, y, piece, type) {
+        if( typeof(type) == 'undefined' ){
+            type = 'piece';
+        }
+        if(type == 'piece'){
+            dropZone(x, y, piece);
+        }
+        var color = (type == 'dropZone') ? 'grey' : piece.color;
+        if(isEmptyPiece(x, y, piece)) {
             eachBlocksFromPiece(x, y, piece, function(x,y){
                 if (isEmptyBlock(x,y)) {
-                    drawBlock(ctx, x, y, piece.color);
+                    drawBlock(ctx, x, y, color);
                 }
             });
             return true;
@@ -376,25 +387,37 @@ $(document).ready(function () {
         }
     }
 
+    function dropZone(x, y, piece){
+        var dropPiece = piece;
+        y += hauteurBlock;
+        while(isEmptyPiece(x, y, piece)){
+            y += hauteurBlock;
+        }
+        y -= hauteurBlock;
+        drawPiece(ctx, x, y, dropPiece, 'dropZone');
+    }
+
     // Creation d'un nouvelle piece
     function newPiece() {
-        var localMultiplicateurVitesse = Math.floor((level >= 10) ? multiplicateurVitesse - (level * 1.6) : multiplicateurVitesse);
-        var timer = (localMultiplicateurVitesse)  - (level * 3 );
-        if (timer < 0) timer = 0;
+        var localMultiplicateurVitesse = Math.floor((level >= 10) ? multiplicateurVitesse - ((level-9) * 5) : multiplicateurVitesse);
+        if (level >= 14) localMultiplicateurVitesse = 5
+        var vitesse = (level <= 5) ? 4 : 2;
+        var timer = (localMultiplicateurVitesse)  - (level * vitesse );
+        if (timer < 3) timer = 3;
         getScore();
         if (piece == ''){
             piece = getRandomPiece();
             piece.direction = 0;
             nextPiece = getRandomPiece();
             nextPiece.direction = 0;
-            drawPiece(ctxNext, 0 , 0 , nextPiece);
+            drawPiece(ctxNext, 0 , 0 , nextPiece, 'nextPiece');
         } else {
             piece = nextPiece;
             piece.direction = 0;
             nextPiece = getRandomPiece();
             nextPiece.direction = 0;
             ctxNext.clearRect(-1, -1, canvasNext.width + 2, canvasNext.height + 2);
-            drawPiece(ctxNext, 0 , 0 , nextPiece);
+            drawPiece(ctxNext, 0 , 0 , nextPiece, 'nextPiece');
         }
         var i = 0;
         var gridCase;
@@ -724,6 +747,11 @@ $(document).ready(function () {
             playPauseSound('musique', 'pause', 'musique');
         }
     }, false);
+    
+    document.getElementById("pause").addEventListener('click', function(){
+        setPause();
+    }, false);
+    
     document.getElementById("soundButton").addEventListener('click', function(){
         if (sound == false) {
             sound = true;
@@ -733,6 +761,7 @@ $(document).ready(function () {
             sound = false;
         }
     }, false);
+    
     $(".choixMusique").on('click', function(){
         sounds['musique'].src = 'media/son/' + this.id + '.mp3';
         playPauseSound('musique', 'play', 'musique');
