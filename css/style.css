@@ -117,12 +117,18 @@ body {
     padding-left: 7px; 
 }
 
-#next-piece {
+#next-piece{
     box-shadow: 5px 5px 5px #999; 
     border: 1px solid #333; 
     float: left;
     background: black;
     margin: 0 0 3.5% 5%;
+}
+
+#pause {
+    margin: 5% 10% ;
+    width: 80%;
+    height: 30px;
 }
 
 #score-jeu div {
