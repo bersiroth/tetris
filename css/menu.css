@@ -18,7 +18,6 @@
     padding         : 1%;
     font-family     : "tetris";
     font-size       : 40px;
-    /*display         : none;*/
 }
 
 #sousTitre {
@@ -123,4 +122,9 @@
 .difficulteActive, .levelActive, .zoneDropActive {
     background      : #999999; 
     color           : white;
+}
+
+#maj td {
+    padding         : 1%;    
+    font-size       : 30px;
 }
