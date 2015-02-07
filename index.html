@@ -3,93 +3,19 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <link rel="stylesheet" href="css/style.css"/>    
+        <link rel="stylesheet" href="css/reset.css"/>    
+        <link rel="stylesheet" href="css/tetris.css"/>    
+        <link rel="stylesheet" href="css/menu.css"/>    
+        <!--<link rel="stylesheet" href="css/mediaQueries.css"/>-->    
         <script src="js/jquery-2.1.3.min.js"></script>
         <script src="js/tetris.js"></script>
+        <script src="js/menuEvent.js"></script>
         <script src="js/google.js"></script>
     </head>
-    <body> 
+    <body>
         <div id="page">
-            <h1 id="titre">Tetris HTML 5 (ALPHA v0.6)</h1>
-            <div id='popup' class="popupOff">
-                <label>Pseudo : </label> <input type="text" name="pseudo" id="pseudo" />
-                <button id="valider">Valider</button>
-            </div>
-            <div id='popupMenu' class="menuOff">
-                <label>Difficulté : </label>
-                <ul> 
-                    <li><input type="radio" name="choixDifficulte" value="facile" checked>Facile</li>
-                    <li><input type="radio" name="choixDifficulte" value="moyen">Moyen (Bonus score 20%)</li>
-                    <li><input type="radio" name="choixDifficulte" value="difficile">Difficile (Bonus score 50%)</li>
-                </ul> 
-                <label>Level de depart : </label>
-                <ul> 
-                    <li><input type="radio" name="choixLevel" value="0" checked>0<input type="radio" name="choixLevel" value="5">5</li>
-                    <li><input type="radio" name="choixLevel" value="1">1<input type="radio" name="choixLevel" value="6">6</li>
-                    <li><input type="radio" name="choixLevel" value="2">2<input type="radio" name="choixLevel" value="7">7</li>
-                    <li><input type="radio" name="choixLevel" value="3">3<input type="radio" name="choixLevel" value="8">8</li>
-                    <li><input type="radio" name="choixLevel" value="4">4<input type="radio" name="choixLevel" value="9">9</li>
-                </ul> 
-                <label>Affichage de la zone de drop : </label>
-                <ul> 
-                    <li><input type="radio" name="choixDrop" value="1" checked>Oui<input type="radio" name="choixDrop" value="0">Non (Bonus score 20%)</li>
-                </ul> 
-                <button id='go'>GO</button>
-            </div>
-            <canvas id="canvas">
-                Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
-            </canvas>
-            <div id="next-piece">
-                <canvas id="next-piece-canvas">
-                    Sorry, this example cannot be run because your browser does not support the &lt;canvas&gt; element
-                </canvas>
-            </div>
-            <div id="score-jeu">
-            </div>
-            <div id="option">
-                <button id='pause' class='pause'>PAUSE</button><br>
-                <label>Musique : </label><button id='musiqueButton'>OFF</button><br>
-                <label>Sound : </label><button id='soundButton'>OFF</button><br>
-                <label>Theme : </label>
-                <ul> 
-                    <li><button id='musiqueA' class='choixMusique'>A</button></li>
-                    <li><button id='musiqueB' class='choixMusique'>B</button></li>
-                    <li><button id='musiqueC' class='choixMusique'>C</button></li>
-                </ul>    
-            </div>
-            <div id="scores">
-                <h3>Scores :</h3>
-                <table>
-                    <thead></thead>
-                </table>
-            </div>
-            <div id="menu-jeu"> 
-                <div>Touche P pour mettre en pause</div>
-                <h3>Regle de calcule des scores :</h3>
-                <div>
-                    1 lignes =  40  x level<br>
-                    2 lignes = 100  x level<br>
-                    3 lignes = 300  x level<br>
-                    4 lignes = 1200 x level<br>
-                </div>
-                <h3>Maj :</h3>
-                <div>
-                    <table>
-                        <tr><td><b>0.1</b></td><td>Ajout d'un visuel sur la prochaine piece</td></tr>
-                        <tr><td><b>0.2</b></td><td>Ajout de la pause</td></tr>
-                        <tr><td><b>0.3</b></td><td>Ajout de son et de la musique</td></tr>
-                        <tr><td><b>0.4</b></td><td>Ajout d'une popup avec le pseudo pour les scores</td></tr>
-                        <tr><td><b>0.4.1</b></td><td>Ajout d'un ecran de game over</td></tr>
-                        <tr><td><b>0.4.2</b></td><td>Changement dans la generation des pieces avec les standards tetris</td></tr>
-                        <tr><td><b>0.4.3</b></td><td>Modifications dans le calcule la vitesse de chute des pieces</td></tr>
-                        <tr><td><b>0.4.4</b></td><td>Apparition des pieces dans la direction horizontal</td></tr>
-                        <tr><td><b>0.4.5</b></td><td>Ajouter d'un bouton pause<td></tr>
-                        <tr><td><b>0.5</b></td><td>Ajout de la zone de chute</td></tr>
-                        <tr><td><b>0.6</b></td><td>Ajout d'un menu avec le choix de la difficulté et du level de depart</td></tr>
-                    </table>
-                </div>
-                <a href="https://github.com/bersiroth/tetris" target="_blank"> GitHub </a>
-            </div>
+            <h1>Tetris <span id='sousTitre'>HTML 5 (ALPHA v0.7)</span></h1>
+            <div id="conntent"></div>
         </div>
     </body>
 </html>

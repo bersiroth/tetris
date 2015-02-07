@@ -6,5 +6,3 @@ define('HOST'      ,'');
 define('USER'      ,'');
 define('PASSWORD'  ,'');
 define('DEV'       ,false);
-
-?>

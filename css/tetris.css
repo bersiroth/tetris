@@ -1,0 +1,108 @@
+@font-face {
+    font-family: 'tetris';
+    src: url('../media/polices/tetris2.ttf');
+}
+     
+h1 {
+    font-size       : 100px;
+    margin          : 2% 5% 1% 0%;
+    padding         : 1% 1% 0% 1%;
+    border          : 2px solid black;
+    background      : #DCDCDC;
+    border-radius   : 30px 0px;    
+    font-family     : "tetris";
+    width           : 98%;
+}
+
+html, body {
+    height: 99%;
+}
+
+body {
+    background-color: black;
+}
+
+#page {
+    width: 90%;
+    max-width: 1500px;
+    margin: 0 auto;
+    border: 1px solid black;
+    background: url('../media/image/bgMenu3.png');
+     height: 100%; 
+    padding: 0 3%;
+}
+
+#titre {
+    margin: 1% auto;
+    width: 70%;
+}
+
+#ecran-jeu {;
+    margin: 0 5%;
+}
+
+#ecran-un-joueur {
+    margin: 0 auto;
+}
+
+#canvas,#canvas2 { 
+    box-shadow: 5px 5px 5px #999; 
+    border: 2px solid #333; 
+    float: left;
+    background: black;
+}
+    
+#score-jeu, #scores, #menu-jeu, #option {
+    border: 1px solid black;
+    width: 30%;
+    background: aliceblue;
+    float: left;
+    margin: 0 0 3.5% 4%;
+    padding: 1%;
+}
+
+#scores td  {
+    padding-left: 7px; 
+}
+
+#next-piece, #next-piece2{
+    box-shadow: 5px 5px 5px #999; 
+    border: 1px solid #333; 
+    float: left;
+    background: black;
+    margin: 0 0 3.5% 5%;
+}
+
+#pause {
+    margin: 5% 10% ;
+    width: 80%;
+    height: 30px;
+}
+
+#score-jeu div {
+    font-weight:bold;
+}
+
+.popupOn {
+    font-weight: bold;
+    position: absolute;
+    top: 40%;
+    color: black;
+    left: 40%;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#popupErreur{
+    color :red;
+    font-weight: bold;
+}
+
+.popupOn input {
+    width: 75px;
+}
+
+.popupOff {
+    display: none;
+}

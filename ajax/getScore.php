@@ -6,7 +6,7 @@ $dsn = 'mysql:dbname=' . DBNAME . ';host=' . HOST;
 $user = USER;
 $password = PASSWORD;
 
-$query = "select * FROM `score` order by score desc limit 0,10;";
+$query = "select * FROM `score` order by score desc limit 0,15;";
 
 try {
     $dbh = new PDO($dsn, $user, $password);
